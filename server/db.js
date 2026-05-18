@@ -31,6 +31,16 @@ db.exec(`
   );
   CREATE INDEX IF NOT EXISTS idx_roadmaps_user ON roadmaps(user_id);
 
+  CREATE TABLE IF NOT EXISTS reservations (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    date       TEXT NOT NULL,
+    time_slot  TEXT NOT NULL,
+    name       TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(date, time_slot)
+  );
+  CREATE INDEX IF NOT EXISTS idx_reservations_date ON reservations(date);
+
   CREATE TABLE IF NOT EXISTS course_descs (
     course_id  TEXT PRIMARY KEY,
     data       TEXT NOT NULL,

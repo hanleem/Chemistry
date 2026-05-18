@@ -10,6 +10,7 @@ import { seedAdmin } from './db.js';
 import authRoutes from './routes/auth.js';
 import roadmapRoutes from './routes/roadmaps.js';
 import courseDescRoutes from './routes/courseDescs.js';
+import reservationRoutes from './routes/reservations.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,6 +35,7 @@ app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/roadmaps', roadmapRoutes);
 app.use('/api/course-descs', courseDescRoutes);
+app.use('/api/reservations', reservationRoutes);
 
 // Generic JSON error handler
 app.use((err, _req, res, _next) => {

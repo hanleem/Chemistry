@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>컴퓨터 예약 시스템</title>
+  <style>
+    :root {
+      --navy: #0d2137;
+      --blue: #1a3a5c;
+      --cyan: #00c4cc;
+      --bg:   #f0f9ff;
+      --white:#ffffff;
+      --avail-bg:  #e6fafa;
+      --avail-bd:  #00c4cc;
+      --taken-bg:  #f1f1f1;
+      --taken-bd:  #bbb;
+      --past-bg:   #f8f8f8;
+      --today-bd:  #f5c842;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;
+           background:var(--bg); color:var(--navy); min-height:100vh; }
+
+    /* ── header ── */
+    .hdr {
+      background:linear-gradient(135deg,var(--navy),var(--blue));
+      color:#fff; padding:14px 18px;
+      display:flex; align-items:center; justify-content:space-between;
+      box-shadow:0 2px 12px rgba(0,0,0,.25); position:sticky; top:0; z-index:50;
+    }
+    .hdr-title { font-size:15px; font-weight:800; }
+    .hdr-sub   { font-size:11px; opacity:.7; margin-top:2px; }
+    .hdr-back  {
+      background:rgba(255,255,255,.15); border:none; color:#fff;
+      padding:7px 14px; border-radius:20px; cursor:pointer; font-size:12px;
+    }
+    .hdr-back:hover { background:rgba(255,255,255,.28); }
+
+    /* ── period nav ── */
+    .period-nav {
+      display:flex; align-items:center; justify-content:center; gap:12px;
+      padding:14px 16px; background:#fff;
+      border-bottom:1px solid #e0eaf0;
+    }
+    .nav-btn {
+      background:var(--navy); color:#fff; border:none;
+      width:34px; height:34px; border-radius:50%; font-size:18px;
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      transition:opacity .15s;
+    }
+    .nav-btn:hover { opacity:.8; }
+    .period-label { font-size:14px; font-weight:700; color:var(--navy); min-width:200px; text-align:center; }
+
+    /* ── table wrap ── */
+    .table-wrap { overflow-x:auto; padding:16px; }
+    table { border-collapse:collapse; min-width:600px; width:100%; }
+    th, td { border:1px solid #dde8f0; padding:0; }
+
+    /* time header col */
+    .th-time {
+      background:var(--navy); color:#fff;
+      font-size:11px; font-weight:700;
+      padding:8px 10px; text-align:center;
+      min-width:68px; position:sticky; left:0; z-index:10;
+    }
+    /* date header */
+    .th-date {
+      background:linear-gradient(180deg,var(--blue),var(--navy));
+      color:#fff; text-align:center; padding:8px 4px; min-width:80px;
+    }
+    .th-date .d-name { font-size:10px; opacity:.75; }
+    .th-date .d-num  { font-size:15px; font-weight:800; }
+    .th-date .d-mon  { font-size:10px; opacity:.75; }
+    .th-date.today   { background:linear-gradient(180deg,#1a5c40,#0d3d28); border-bottom:3px solid var(--today-bd); }
+    .th-date.weekend { background:linear-gradient(180deg,#3a2060,#251040); }
+
+    /* time label cell */
+    .td-time {
+      background:#f5faff; font-size:11px; font-weight:700;
+      color:var(--blue); text-align:center; padding:10px 6px;
+      position:sticky; left:0; z-index:5; border-right:2px solid #c0d8ea;
+    }
+
+    /* slot cell */
+    .cell { padding:4px; height:52px; }
+    .slot {
+      width:100%; height:100%; border-radius:8px;
+      border:none; cursor:pointer; font-size:11px; font-weight:600;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:2px; transition:transform .1s, box-shadow .1s;
+    }
+    .slot.available {
+      background:var(--avail-bg); color:#007a80;
+      border:1.5px solid var(--avail-bd);
+    }
+    .slot.available:hover { transform:scale(1.04); box-shadow:0 3px 10px rgba(0,196,204,.3); }
+    .slot.taken {
+      background:var(--taken-bg); color:#555;
+      border:1.5px solid var(--taken-bd); cursor:pointer;
+    }
+    .slot.taken:hover { box-shadow:0 2px 8px rgba(0,0,0,.12); }
+    .slot.past  { background:var(--past-bg); color:#bbb; border:1.5px solid #e8e8e8; cursor:default; }
+    .slot-icon  { font-size:14px; }
+    .slot-name  { font-size:10px; max-width:68px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+    /* ── legend ── */
+    .legend {
+      display:flex; gap:16px; justify-content:center; flex-wrap:wrap;
+      padding:12px 16px; font-size:11px; color:#666;
+    }
+    .legend-item { display:flex; align-items:center; gap:5px; }
+    .leg-dot {
+      width:14px; height:14px; border-radius:4px; border:1.5px solid;
+    }
+    .leg-dot.available { background:var(--avail-bg); border-color:var(--avail-bd); }
+    .leg-dot.taken     { background:var(--taken-bg); border-color:var(--taken-bd); }
+    .leg-dot.past      { background:var(--past-bg);  border-color:#e8e8e8; }
+
+    /* ── modal ── */
+    .overlay {
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,.45); z-index:200;
+      align-items:center; justify-content:center; padding:20px;
+    }
+    .overlay.show { display:flex; }
+    .modal-box {
+      background:#fff; border-radius:16px; padding:28px 24px;
+      width:100%; max-width:340px;
+      box-shadow:0 12px 48px rgba(0,0,0,.22);
+      animation:popIn .22s ease;
+    }
+    @keyframes popIn { from{transform:scale(.92);opacity:0} to{transform:scale(1);opacity:1} }
+    .modal-box h2   { font-size:16px; font-weight:800; margin-bottom:6px; color:var(--navy); }
+    .modal-info     { font-size:12px; color:#555; margin-bottom:16px; line-height:1.6; }
+    .modal-info strong { color:var(--navy); }
+    .modal-input {
+      width:100%; padding:10px 12px; border-radius:8px;
+      border:1.5px solid #dde; font-size:13px; font-family:inherit;
+      outline:none; margin-bottom:12px;
+    }
+    .modal-input:focus { border-color:var(--cyan); }
+    .modal-btns { display:flex; gap:8px; }
+    .btn-cancel { flex:1; padding:10px; border-radius:8px; border:1px solid #ddd; background:#f5f5f5; color:#666; cursor:pointer; font-size:13px; font-weight:600; }
+    .btn-confirm{ flex:2; padding:10px; border-radius:8px; border:none; background:linear-gradient(135deg,var(--navy),var(--blue)); color:#fff; cursor:pointer; font-size:13px; font-weight:700; }
+    .btn-danger { flex:2; padding:10px; border-radius:8px; border:none; background:linear-gradient(135deg,#c0392b,#e74c3c); color:#fff; cursor:pointer; font-size:13px; font-weight:700; }
+    .modal-error { font-size:11px; color:#e74c3c; margin-bottom:10px; padding:7px 10px; background:#ffeaea; border-radius:6px; }
+
+    /* ── toast ── */
+    .toast {
+      position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+      background:var(--navy); color:#fff; padding:10px 22px;
+      border-radius:24px; font-size:13px; font-weight:600;
+      box-shadow:0 4px 20px rgba(0,0,0,.25); z-index:300;
+      opacity:0; transition:opacity .3s; pointer-events:none;
+    }
+    .toast.show { opacity:1; }
+
+    /* ── loading ── */
+    .loading { text-align:center; padding:40px; color:#888; font-size:13px; }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="hdr">
+  <div>
+    <div class="hdr-title">💻 컴퓨터 예약 시스템</div>
+    <div class="hdr-sub">명지대학교 화학나노학전공</div>
+  </div>
+  <button class="hdr-back" onclick="history.back()">← 돌아가기</button>
+</div>
+
+<!-- Period navigation -->
+<div class="period-nav">
+  <button class="nav-btn" id="btn-prev">‹</button>
+  <div class="period-label" id="period-label">로딩 중…</div>
+  <button class="nav-btn" id="btn-next">›</button>
+</div>
+
+<!-- Calendar -->
+<div class="table-wrap">
+  <div id="loading" class="loading">📅 예약 현황 불러오는 중…</div>
+  <table id="cal-table" style="display:none">
+    <thead><tr id="thead-row"></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-item"><div class="leg-dot available"></div> 예약 가능</div>
+  <div class="legend-item"><div class="leg-dot taken"></div> 예약됨 (클릭 시 취소)</div>
+  <div class="legend-item"><div class="leg-dot past"></div> 지난 시간</div>
+</div>
+
+<!-- Reserve modal -->
+<div class="overlay" id="modal-reserve">
+  <div class="modal-box">
+    <h2>✅ 예약하기</h2>
+    <div class="modal-info" id="reserve-info"></div>
+    <div class="modal-error" id="reserve-error" style="display:none"></div>
+    <input class="modal-input" id="reserve-name" type="text" placeholder="이름을 입력하세요" maxlength="20" />
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('modal-reserve')">취소</button>
+      <button class="btn-confirm" id="btn-do-reserve">예약 확정</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cancel modal -->
+<div class="overlay" id="modal-cancel">
+  <div class="modal-box">
+    <h2>🗑️ 예약 취소</h2>
+    <div class="modal-info" id="cancel-info"></div>
+    <div class="modal-error" id="cancel-error" style="display:none"></div>
+    <input class="modal-input" id="cancel-name" type="text" placeholder="예약 시 입력한 이름" maxlength="20" />
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('modal-cancel')">닫기</button>
+      <button class="btn-danger" id="btn-do-cancel">취소 확정</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ──────────────────────────────────────
+   설정
+────────────────────────────────────── */
+const TIME_SLOTS = [
+  '09:00','10:00','11:00','12:00',
+  '13:00','14:00','15:00','16:00','17:00'
+];
+const DAY_KO = ['일','월','화','수','목','금','토'];
+
+/* ──────────────────────────────────────
+   기간(2주) 계산
+────────────────────────────────────── */
+function getPeriodForDate(d) {
+  const y = d.getFullYear(), m = d.getMonth();
+  if (d.getDate() <= 14) {
+    return { start: new Date(y, m, 1), end: new Date(y, m, 14) };
+  } else {
+    const last = new Date(y, m + 1, 0).getDate();
+    return { start: new Date(y, m, 15), end: new Date(y, m, last) };
+  }
+}
+function prevPeriod(p) {
+  const d = new Date(p.start); d.setDate(d.getDate() - 1);
+  return getPeriodForDate(d);
+}
+function nextPeriod(p) {
+  const d = new Date(p.end); d.setDate(d.getDate() + 1);
+  return getPeriodForDate(d);
+}
+function fmtDate(d) {
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), dd = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${dd}`;
+}
+function datesBetween(start, end) {
+  const arr = [], cur = new Date(start);
+  while (cur <= end) { arr.push(new Date(cur)); cur.setDate(cur.getDate()+1); }
+  return arr;
+}
+
+/* ──────────────────────────────────────
+   상태
+────────────────────────────────────── */
+let period = getPeriodForDate(new Date());
+let reservations = {};   // key: "date|slot" → { id, name }
+let pendingCell = null;  // { date, slot } or { id, name, date, slot }
+
+/* ──────────────────────────────────────
+   API
+────────────────────────────────────── */
+async function fetchReservations() {
+  const s = fmtDate(period.start), e = fmtDate(period.end);
+  const res = await fetch(`/api/reservations?start=${s}&end=${e}`);
+  const data = await res.json();
+  reservations = {};
+  data.forEach(r => { reservations[`${r.date}|${r.time_slot}`] = { id: r.id, name: r.name }; });
+}
+
+async function postReservation(date, time_slot, name) {
+  const res = await fetch('/api/reservations', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ date, time_slot, name })
+  });
+  return res.json();
+}
+
+async function deleteReservation(id, name) {
+  const res = await fetch(`/api/reservations/${id}`, {
+    method:'DELETE', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ name })
+  });
+  return res.json();
+}
+
+/* ──────────────────────────────────────
+   렌더
+────────────────────────────────────── */
+function renderPeriodLabel() {
+  const s = period.start, e = period.end;
+  const label = s.getMonth() === e.getMonth()
+    ? `${s.getFullYear()}년 ${s.getMonth()+1}월 ${s.getDate()}일 ~ ${e.getDate()}일`
+    : `${s.getFullYear()}년 ${s.getMonth()+1}월 ${s.getDate()}일 ~ ${e.getMonth()+1}월 ${e.getDate()}일`;
+  document.getElementById('period-label').textContent = label;
+}
+
+function renderTable() {
+  const dates = datesBetween(period.start, period.end);
+  const today = fmtDate(new Date());
+  const now   = new Date();
+
+  // thead
+  const thead = document.getElementById('thead-row');
+  thead.innerHTML = '<th class="th-time">시간</th>';
+  dates.forEach(d => {
+    const ds = fmtDate(d);
+    const dow = d.getDay();
+    const cls = ['th-date', ds === today ? 'today' : '', (dow===0||dow===6) ? 'weekend' : ''].filter(Boolean).join(' ');
+    thead.innerHTML += `
+      <th class="${cls}">
+        <div class="d-name">${DAY_KO[dow]}요일</div>
+        <div class="d-num">${d.getDate()}</div>
+        <div class="d-mon">${d.getMonth()+1}월</div>
+      </th>`;
+  });
+
+  // tbody
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  TIME_SLOTS.forEach(slot => {
+    const tr = document.createElement('tr');
+    // time label
+    const slotEnd = String(Number(slot.split(':')[0]) + 1).padStart(2,'0') + ':00';
+    tr.innerHTML = `<td class="td-time">${slot}<br><span style="font-size:9px;opacity:.6;">~${slotEnd}</span></td>`;
+
+    dates.forEach(d => {
+      const ds = fmtDate(d);
+      const key = `${ds}|${slot}`;
+      const slotDt = new Date(`${ds}T${slot}:00`);
+      const isPast = slotDt < now;
+      const rec = reservations[key];
+
+      const td = document.createElement('td');
+      td.className = 'cell';
+
+      if (isPast) {
+        td.innerHTML = `<button class="slot past" disabled>
+          <span class="slot-icon">—</span>
+          ${rec ? `<span class="slot-name">${rec.name}</span>` : ''}
+        </button>`;
+      } else if (rec) {
+        td.innerHTML = `<button class="slot taken" data-key="${key}" data-id="${rec.id}" data-name="${rec.name}" data-date="${ds}" data-slot="${slot}">
+          <span class="slot-icon">👤</span>
+          <span class="slot-name">${rec.name}</span>
+        </button>`;
+      } else {
+        td.innerHTML = `<button class="slot available" data-date="${ds}" data-slot="${slot}">
+          <span class="slot-icon">+</span>
+        </button>`;
+      }
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+}
+
+async function load() {
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('cal-table').style.display = 'none';
+  renderPeriodLabel();
+  try {
+    await fetchReservations();
+    renderTable();
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('cal-table').style.display = '';
+  } catch(e) {
+    document.getElementById('loading').textContent = '❌ 서버에 연결할 수 없습니다. 잠시 후 다시 시도하세요.';
+  }
+}
+
+/* ──────────────────────────────────────
+   이벤트 위임
+────────────────────────────────────── */
+document.getElementById('tbody').addEventListener('click', e => {
+  const btn = e.target.closest('.slot');
+  if (!btn) return;
+
+  if (btn.classList.contains('available')) {
+    openReserveModal(btn.dataset.date, btn.dataset.slot);
+  } else if (btn.classList.contains('taken')) {
+    openCancelModal(Number(btn.dataset.id), btn.dataset.name, btn.dataset.date, btn.dataset.slot);
+  }
+});
+
+/* ──────────────────────────────────────
+   예약 모달
+────────────────────────────────────── */
+function openReserveModal(date, slot) {
+  pendingCell = { date, slot };
+  const slotEnd = String(Number(slot.split(':')[0])+1).padStart(2,'0')+':00';
+  document.getElementById('reserve-info').innerHTML =
+    `<strong>${date}</strong> &nbsp;${slot} ~ ${slotEnd} 시간대를 예약합니다.<br>이름을 입력하세요.`;
+  document.getElementById('reserve-name').value = '';
+  document.getElementById('reserve-error').style.display = 'none';
+  document.getElementById('modal-reserve').classList.add('show');
+  setTimeout(()=>document.getElementById('reserve-name').focus(), 50);
+}
+
+document.getElementById('btn-do-reserve').onclick = async () => {
+  const name = document.getElementById('reserve-name').value.trim();
+  if (!name) { showModalError('reserve', '이름을 입력하세요.'); return; }
+  const btn = document.getElementById('btn-do-reserve');
+  btn.disabled = true; btn.textContent = '처리 중…';
+  const result = await postReservation(pendingCell.date, pendingCell.slot, name);
+  btn.disabled = false; btn.textContent = '예약 확정';
+  if (result.error) { showModalError('reserve', result.error); return; }
+  closeModal('modal-reserve');
+  showToast(`✅ ${name}님 예약 완료!`);
+  await load();
+};
+
+document.getElementById('reserve-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('btn-do-reserve').click();
+});
+
+/* ──────────────────────────────────────
+   취소 모달
+────────────────────────────────────── */
+function openCancelModal(id, name, date, slot) {
+  pendingCell = { id, name, date, slot };
+  const slotEnd = String(Number(slot.split(':')[0])+1).padStart(2,'0')+':00';
+  document.getElementById('cancel-info').innerHTML =
+    `<strong>${date}</strong> &nbsp;${slot} ~ ${slotEnd}<br>예약자: <strong>${name}</strong><br><br>취소하려면 예약 시 입력한 이름을 입력하세요.`;
+  document.getElementById('cancel-name').value = '';
+  document.getElementById('cancel-error').style.display = 'none';
+  document.getElementById('modal-cancel').classList.add('show');
+  setTimeout(()=>document.getElementById('cancel-name').focus(), 50);
+}
+
+document.getElementById('btn-do-cancel').onclick = async () => {
+  const name = document.getElementById('cancel-name').value.trim();
+  if (!name) { showModalError('cancel', '이름을 입력하세요.'); return; }
+  const btn = document.getElementById('btn-do-cancel');
+  btn.disabled = true; btn.textContent = '처리 중…';
+  const result = await deleteReservation(pendingCell.id, name);
+  btn.disabled = false; btn.textContent = '취소 확정';
+  if (result.error) { showModalError('cancel', result.error); return; }
+  closeModal('modal-cancel');
+  showToast('🗑️ 예약이 취소되었습니다.');
+  await load();
+};
+
+document.getElementById('cancel-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('btn-do-cancel').click();
+});
+
+/* ──────────────────────────────────────
+   유틸
+────────────────────────────────────── */
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('show'); });
+});
+
+function showModalError(prefix, msg) {
+  const el = document.getElementById(`${prefix}-error`);
+  el.textContent = msg; el.style.display = 'block';
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+/* ──────────────────────────────────────
+   기간 네비게이션
+────────────────────────────────────── */
+document.getElementById('btn-prev').onclick = () => { period = prevPeriod(period); load(); };
+document.getElementById('btn-next').onclick = () => { period = nextPeriod(period); load(); };
+
+/* ──────────────────────────────────────
+   초기 실행
+────────────────────────────────────── */
+load();
+</script>
+</body>
+</html>
