@@ -31,8 +31,37 @@ export default function AuthPage() {
 
   return (
     <div style={{
-      maxWidth: 360, margin: '60px auto', padding: '24px 20px',
+      maxWidth: 360, margin: '60px auto', padding: '0 20px 40px',
       fontFamily: 'system-ui, -apple-system, sans-serif',
+    }}>
+
+      {/* ── 바로가기 버튼 2개 ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+        <button
+          onClick={() => window.open('/fair/', '_blank')}
+          style={quickBtnStyle('#0d2137', 'linear-gradient(135deg,#0d2137,#1a3a5c)')}
+        >
+          <span style={{ fontSize: 20 }}>🔬</span>
+          <span>
+            <div style={{ fontWeight: 700, fontSize: 13 }}>화학과 연구실 박람회</div>
+            <div style={{ fontSize: 11, opacity: 0.8, marginTop: 1 }}>연구실 소개 · 홈페이지 · 동영상 QR</div>
+          </span>
+        </button>
+        <button
+          onClick={() => alert('컴퓨터 예약 시스템 준비 중입니다.')}
+          style={quickBtnStyle('#185FA5', 'linear-gradient(135deg,#185FA5,#1d7ec2)')}
+        >
+          <span style={{ fontSize: 20 }}>💻</span>
+          <span>
+            <div style={{ fontWeight: 700, fontSize: 13 }}>컴퓨터 예약 시스템</div>
+            <div style={{ fontSize: 11, opacity: 0.8, marginTop: 1 }}>실습실 좌석 예약하기</div>
+          </span>
+        </button>
+      </div>
+
+      {/* ── 로그인 카드 ── */}
+    <div style={{
+      padding: '24px 20px',
       background: '#fff', borderRadius: 10, border: '0.5px solid #e0e0dc',
     }}>
       <div style={{ textAlign: 'center', marginBottom: 18 }}>
@@ -79,8 +108,20 @@ export default function AuthPage() {
           {submitting ? '처리 중…' : mode === 'login' ? '로그인' : '가입하고 시작하기'}
         </button>
       </form>
-    </div>
+    </div>  {/* 로그인 카드 닫기 */}
+    </div>  {/* 전체 래퍼 닫기 */}
   );
+}
+
+function quickBtnStyle(color, background) {
+  return {
+    display: 'flex', alignItems: 'center', gap: 14,
+    padding: '14px 18px', borderRadius: 10, border: 'none',
+    background, color: '#fff', cursor: 'pointer',
+    textAlign: 'left', width: '100%',
+    boxShadow: '0 3px 12px rgba(0,0,0,0.15)',
+    transition: 'transform 0.15s, box-shadow 0.15s',
+  };
 }
 
 function Field({ label, value, onChange, type = 'text', placeholder, autoFocus }) {
