@@ -51,14 +51,14 @@ export const ALL_COURSES = [
   // ── 3학년 2학기 ──
   { id: 'oc_syn',  name: '유기합성화학',             semester: 'Y3S2', type: 'major', credit: 3, module: 'E11', kind: 'theory', isUpperChoice: true },
   { id: 'cat_lab', name: '에너지소재/촉매실험',      semester: 'Y3S2', type: 'major', credit: 2, module: 'O1',  kind: 'lab',    isUpperChoice: true },
-  { id: 'cap2',    name: '소재캡스톤디자인2',        semester: 'Y3S2', type: 'major', credit: 4, module: 'H3',  kind: 'lab',    isUpperChoice: true },
+  { id: 'cap2',    name: '소재캡스톤디자인2',        semester: 'Y3S2', type: 'major', credit: 3, module: 'H3',  kind: 'lab',    isUpperChoice: true },
   { id: 'comp',    name: '컴퓨터화학',               semester: 'Y3S2', type: 'major', credit: 3, module: 'E21', kind: 'lab',    isUpperChoice: true },
 
   // ── 4학년 1학기 ──
   // IPP 필수 교과 (4과목, 취업 IPP 경로 필수 수강)
   { id: 'mol_spec',  name: '분자분광학과반응속도', semester: 'Y4S1', type: 'major', credit: 3, module: 'T1',  kind: 'theory', isUpperChoice: true, ippRequired: true,
     hint: 'IPP 필수 교과' },
-  { id: 'cap1',      name: '소재캡스톤디자인1',    semester: 'Y3S1', type: 'major', credit: 4, module: 'H3',  kind: 'lab',    isUpperChoice: true, ippRequired: true,
+  { id: 'cap1',      name: '소재캡스톤디자인1',    semester: 'Y3S1', type: 'major', credit: 3, module: 'H3',  kind: 'lab',    isUpperChoice: true, ippRequired: true,
     hint: 'IPP 필수 교과 (IPP 학생: 4학년 1학기 이수, 비IPP: 3학년 1학기 이수)' },
   { id: 'func_poly', name: '기능성고분자소재',     semester: 'Y4S1', type: 'major', credit: 3, module: 'H2',  kind: 'theory', isUpperChoice: true, ippRequired: true,
     hint: 'IPP 필수 교과' },
