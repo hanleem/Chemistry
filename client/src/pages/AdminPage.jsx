@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ALL_COURSES, SEMESTER_LABELS } from '../data/courses';
 import { STATIC_COURSE_DESCS, getCourseDesc, saveAdminDesc, deleteAdminDesc, getAllAdminOverrides } from '../data/courseDescs';
 
@@ -11,7 +11,126 @@ const BTN = {
 
 const semOrder = ['Y1S1','Y1S2','Y2S1','Y2S2','Y3S1','Y3S2','Y4S1','Y4S2'];
 
+// ── 접속 통계 탭 컴포넌트 ──
+function VisitsTab() {
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/visits/stats', { credentials: 'include' })
+      .then(r => r.json())
+      .then(d => { setStats(d); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+
+  if (loading) return (
+    <div style={{ padding: 40, textAlign: 'center', color: '#888', fontSize: 13 }}>통계 불러오는 중…</div>
+  );
+  if (!stats) return (
+    <div style={{ padding: 40, textAlign: 'center', color: '#DC2626', fontSize: 13 }}>통계를 불러오지 못했습니다.</div>
+  );
+
+  const monthLabel = stats.thisMonth ? stats.thisMonth.replace('-', '년 ') + '월' : '';
+  const maxDaily = Math.max(...(stats.daily?.map(d => d.count) ?? [1]), 1);
+
+  return (
+    <div style={{ padding: '16px 20px', maxWidth: 520 }}>
+      {/* 요약 카드 3개 */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 20 }}>
+        {[
+          { label: '오늘', value: stats.todayTotal, color: '#185FA5', bg: '#E6F1FB' },
+          { label: monthLabel, value: stats.monthTotal, color: '#534AB7', bg: '#EEEDFE' },
+          { label: '누적 (연인원)', value: stats.allTime, color: '#0F6E56', bg: '#E1F5EE' },
+        ].map(({ label, value, color, bg }) => (
+          <div key={label} style={{
+            borderRadius: 10, background: bg, padding: '12px 14px',
+            border: `1px solid ${color}30`,
+          }}>
+            <div style={{ fontSize: 10, color, fontWeight: 600, marginBottom: 4 }}>{label}</div>
+            <div style={{ fontSize: 26, fontWeight: 800, color, lineHeight: 1 }}>{value ?? 0}</div>
+            <div style={{ fontSize: 9, color, opacity: 0.7, marginTop: 3 }}>명</div>
+          </div>
+        ))}
+      </div>
+
+      {/* 이번 달 일별 바 차트 */}
+      <div style={{
+        borderRadius: 10, border: '0.5px solid #e0e0dc',
+        background: '#fafaf8', padding: '14px 16px', marginBottom: 16,
+      }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#1a1a1a', marginBottom: 10 }}>
+          {monthLabel} 일별 접속자
+        </div>
+        {stats.daily?.length === 0 ? (
+          <div style={{ fontSize: 12, color: '#aaa', textAlign: 'center', padding: '12px 0' }}>
+            이번 달 접속 기록이 없습니다.
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+            {stats.daily?.map(d => {
+              const pct = Math.round((d.count / maxDaily) * 100);
+              const dayStr = d.visit_date.slice(5); // MM-DD
+              return (
+                <div key={d.visit_date} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 36, fontSize: 10, color: '#888', flexShrink: 0, textAlign: 'right' }}>{dayStr}</div>
+                  <div style={{ flex: 1, height: 16, background: '#eee', borderRadius: 4, overflow: 'hidden' }}>
+                    <div style={{
+                      width: `${pct}%`, height: '100%',
+                      background: 'linear-gradient(90deg,#534AB7,#185FA5)',
+                      borderRadius: 4, transition: 'width .3s',
+                      minWidth: d.count > 0 ? 4 : 0,
+                    }} />
+                  </div>
+                  <div style={{ width: 24, fontSize: 11, fontWeight: 700, color: '#534AB7', flexShrink: 0 }}>{d.count}</div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* 최근 12개월 월별 현황 */}
+      <div style={{
+        borderRadius: 10, border: '0.5px solid #e0e0dc',
+        background: '#fafaf8', padding: '14px 16px',
+      }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#1a1a1a', marginBottom: 10 }}>
+          월별 접속자 현황
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {stats.monthly?.length === 0 && (
+            <div style={{ fontSize: 12, color: '#aaa', textAlign: 'center', padding: '12px 0' }}>기록 없음</div>
+          )}
+          {stats.monthly?.map(m => {
+            const ml = m.visit_month.replace('-', '년 ') + '월';
+            const isCurrent = m.visit_month === stats.thisMonth;
+            return (
+              <div key={m.visit_month} style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                padding: '5px 8px', borderRadius: 6,
+                background: isCurrent ? '#EEEDFE' : 'transparent',
+              }}>
+                <div style={{ fontSize: 12, color: isCurrent ? '#534AB7' : '#555', fontWeight: isCurrent ? 700 : 400 }}>
+                  {ml}{isCurrent ? ' (이번 달)' : ''}
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: isCurrent ? '#534AB7' : '#1a1a1a' }}>
+                  {m.count}명
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{ fontSize: 10, color: '#aaa', marginTop: 10, lineHeight: 1.5 }}>
+          * 동일 사용자가 같은 날 여러 번 접속해도 1회로 집계됩니다.<br />
+          * 매월 1일 기준으로 당월 카운터가 새로 시작됩니다.
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminPage({ onClose }) {
+  const [tab, setTab] = useState('courses'); // 'courses' | 'visits'
   const [overrides, setOverrides] = useState(getAllAdminOverrides);
   const [editingId, setEditingId] = useState(null);
   const [editData, setEditData] = useState({ desc: '', keywords: '', related: '' });
@@ -91,18 +210,48 @@ export default function AdminPage({ onClose }) {
         padding: '12px 16px', borderBottom: '1px solid #e0e0dc',
         background: '#fafaf8', flexShrink: 0,
       }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a' }}>교과 설명 관리자</div>
-        <div style={{ fontSize: 11, padding: '2px 8px', borderRadius: 10, background: '#FEF3C7', color: '#B45309', fontWeight: 600 }}>
-          설명 없음 {totalMissing}개
+        <div style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a' }}>관리자</div>
+        {/* 탭 버튼 */}
+        <div style={{ display: 'flex', gap: 4 }}>
+          {[
+            { key: 'courses', label: '📚 교과 설명' },
+            { key: 'visits',  label: '📊 접속 통계' },
+          ].map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              style={{
+                ...BTN.base,
+                ...(tab === key ? BTN.primary : BTN.ghost),
+                fontSize: 12, padding: '4px 12px',
+              }}
+            >{label}</button>
+          ))}
         </div>
+        {tab === 'courses' && (
+          <div style={{ fontSize: 11, padding: '2px 8px', borderRadius: 10, background: '#FEF3C7', color: '#B45309', fontWeight: 600 }}>
+            설명 없음 {totalMissing}개
+          </div>
+        )}
         <div style={{ display: 'flex', gap: 6, marginLeft: 'auto', flexWrap: 'wrap' }}>
-          <button onClick={exportJSON} style={{ ...BTN.base, ...BTN.ghost }}>
-            {copied ? '✓ 복사됨' : 'JSON 내보내기'}
-          </button>
+          {tab === 'courses' && (
+            <button onClick={exportJSON} style={{ ...BTN.base, ...BTN.ghost }}>
+              {copied ? '✓ 복사됨' : 'JSON 내보내기'}
+            </button>
+          )}
           <button onClick={onClose} style={{ ...BTN.base, ...BTN.primary }}>닫기</button>
         </div>
       </div>
 
+      {/* 접속 통계 탭 */}
+      {tab === 'visits' && (
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          <VisitsTab />
+        </div>
+      )}
+
+      {/* 교과 설명 탭 */}
+      {tab === 'courses' && <>
       {/* Filter bar */}
       <div style={{
         display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap',
@@ -291,6 +440,7 @@ export default function AdminPage({ onClose }) {
           </div>
         )}
       </div>
+      </>}
     </div>
   );
 }

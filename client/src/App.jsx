@@ -36,6 +36,8 @@ export default function App() {
     if (user) {
       fetchRoadmaps();
       loadAdminOverrides();
+      // 접속 기록 (하루 1회, 중복 무시)
+      fetch('/api/visits', { method: 'POST', credentials: 'include' }).catch(() => {});
     } else {
       resetAll();
     }

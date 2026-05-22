@@ -17,6 +17,7 @@ import fairScheduleRoutes from './routes/fairSchedule.js';
 import fairBooth2Routes from './routes/fairBooth2.js';
 import fairRndRoutes from './routes/fairRnd.js';
 import fairGradScheduleRoutes from './routes/fairGradSchedule.js';
+import visitsRoutes from './routes/visits.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -48,6 +49,7 @@ app.use('/api/fair-schedule', fairScheduleRoutes);
 app.use('/api/fair-booth2', fairBooth2Routes);
 app.use('/api/fair-rnd', fairRndRoutes);
 app.use('/api/fair-grad-schedule', fairGradScheduleRoutes);
+app.use('/api/visits', visitsRoutes);
 
 // Generic JSON error handler
 app.use((err, _req, res, _next) => {
