@@ -7,7 +7,7 @@ import { useSelectionStore } from '../store/useSelectionStore';
 import { ModuleChip, ModuleDetail, NavButtons } from '../components';
 
 const SEM_LABEL = {
-  Y3S1: '3-1', Y3S2: '3-2', Y4S1: '4-1', Y4S2: '4-2',
+  Y3S1: '3-1', Y3S2: '3-2/4-2', Y4S1: '4-1', Y4S2: '4-2',
 };
 const SEM_COLOR = {
   Y3S1: '#534AB7', Y3S2: '#0F6E56', Y4S1: '#0369A1', Y4S2: '#B45309',
@@ -103,7 +103,7 @@ export function Step3Upper() {
     const dimmed = !sel && maxReached;
     const isRecommended = careerPath?.recommendedUpperIds?.includes(course.id);
     const semColor = SEM_COLOR[course.semester] ?? '#888';
-    const semLabel = SEM_LABEL[course.semester] ?? '';
+    const semLabel = course.id === 'cap1' ? '3-1/4-1' : (SEM_LABEL[course.semester] ?? '');
     return (
       <div
         key={course.id}
@@ -240,7 +240,7 @@ export function Step3Upper() {
             fontSize: 9, padding: '1px 6px', borderRadius: 3,
             background: SEM_COLOR[key] + '18', color: SEM_COLOR[key], fontWeight: 600,
             border: `0.5px solid ${SEM_COLOR[key]}40`,
-          }}>{label} = {key === 'Y3S1' ? '3학년 1학기' : key === 'Y3S2' ? '3학년 2학기' : key === 'Y4S1' ? '4학년 1학기' : '4학년 2학기(D학기제)'}</span>
+          }}>{label} = {key === 'Y3S1' ? '3학년 1학기' : key === 'Y3S2' ? '3·4학년 2학기' : key === 'Y4S1' ? '4학년 1학기' : '4학년 2학기(D학기제)'}</span>
         ))}
       </div>
 
@@ -510,22 +510,11 @@ export function Step4AdvMod() {
             </div>
             <div style={{ fontSize: 13, fontWeight: 600, color: md.color, marginBottom: 4 }}>{md.name}</div>
             {md.completionRule && (
-              <div style={{ fontSize: 10, color: md.color, opacity: .85, marginBottom: 4, lineHeight: 1.5 }}>
+              <div style={{ fontSize: 10, color: md.color, opacity: .85, marginBottom: 4, lineHeight: 1.6, whiteSpace: 'pre-line' }}>
                 수료 요건: {md.completionRule}
               </div>
             )}
-            {md.crossDeptRequired && md.crossDeptRequired.length > 0 && (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3, marginBottom: 4 }}>
-                <span style={{ fontSize: 9, color: md.color, opacity: .7 }}>타학과 이수 필요:</span>
-                {md.crossDeptRequired.map((c, i) => (
-                  <span key={i} style={{
-                    fontSize: 9, padding: '1px 6px', borderRadius: 2,
-                    border: `0.5px solid ${md.color}50`, color: md.color, background: '#fff8',
-                  }}>{c.name} ({c.dept})</span>
-                ))}
-              </div>
-            )}
-            <div style={{ fontSize: 10, color: '#666', lineHeight: 1.5 }}>{md.desc}</div>
+            {md.desc && <div style={{ fontSize: 10, color: '#666', lineHeight: 1.5 }}>{md.desc}</div>}
           </div>
         );
       })}

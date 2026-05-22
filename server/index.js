@@ -6,11 +6,17 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-import { seedAdmin } from './db.js';
+import { seedAdmin, seedStudAdmin, seedFairAdmin, seedFairSchedule, seedRndPrograms, seedGradSchedule } from './db.js';
 import authRoutes from './routes/auth.js';
 import roadmapRoutes from './routes/roadmaps.js';
 import courseDescRoutes from './routes/courseDescs.js';
 import reservationRoutes from './routes/reservations.js';
+import noticeRoutes from './routes/notices.js';
+import fairPosterRoutes from './routes/fairPosters.js';
+import fairScheduleRoutes from './routes/fairSchedule.js';
+import fairBooth2Routes from './routes/fairBooth2.js';
+import fairRndRoutes from './routes/fairRnd.js';
+import fairGradScheduleRoutes from './routes/fairGradSchedule.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,7 +31,7 @@ if (process.env.CORS_ORIGIN) {
   app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
 }
 
-app.use(express.json({ limit: '512kb' }));
+app.use(express.json({ limit: '50mb' }));
 app.use(cookieParser());
 
 // Health check
@@ -36,6 +42,12 @@ app.use('/api/auth', authRoutes);
 app.use('/api/roadmaps', roadmapRoutes);
 app.use('/api/course-descs', courseDescRoutes);
 app.use('/api/reservations', reservationRoutes);
+app.use('/api/notices', noticeRoutes);
+app.use('/api/fair-posters', fairPosterRoutes);
+app.use('/api/fair-schedule', fairScheduleRoutes);
+app.use('/api/fair-booth2', fairBooth2Routes);
+app.use('/api/fair-rnd', fairRndRoutes);
+app.use('/api/fair-grad-schedule', fairGradScheduleRoutes);
 
 // Generic JSON error handler
 app.use((err, _req, res, _next) => {
@@ -56,6 +68,11 @@ if (fs.existsSync(clientDist)) {
 }
 
 seedAdmin();
+seedStudAdmin();
+seedFairAdmin();
+seedFairSchedule();
+seedRndPrograms();
+seedGradSchedule();
 
 app.listen(PORT, () => {
   console.log(`[server] listening on http://localhost:${PORT}`);

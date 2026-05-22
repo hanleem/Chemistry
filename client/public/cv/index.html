@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CV Builder — 명지대 화학나노학전공</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@300;400;500;600&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#1c2b3a;--gold:#c4a45a;--bg:#e8e2d9;--border:#d4c9b0;--text:#1a1a1a;--muted:#7a6e5a;--accent:#f5f0e8}
+
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
+
+/* ── LANG SCREEN ── */
+#lang-screen{
+  position:fixed;inset:0;
+  background:linear-gradient(145deg,#0e1820 0%,#1c2b3a 45%,#253d52 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:48px;z-index:999
+}
+.ls-logo{text-align:center}
+.ls-logo h1{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:#fff;letter-spacing:.5px}
+.ls-logo h1 span{color:var(--gold)}
+.ls-logo p{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(196,164,90,.5);margin-top:8px}
+.ls-back{position:absolute;top:20px;left:20px;display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.45);font-size:12px;text-decoration:none;border:1px solid rgba(255,255,255,.15);padding:6px 14px;border-radius:4px;transition:all .2s;font-family:'Inter',sans-serif}
+.ls-back:hover{color:#fff;border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.06)}
+.ls-cards{display:flex;gap:24px}
+.ls-card{
+  width:230px;background:rgba(255,255,255,.04);
+  border:1px solid rgba(196,164,90,.2);border-radius:10px;
+  padding:30px 24px 28px;cursor:pointer;text-align:center;
+  transition:all .22s;
+}
+.ls-card:hover{background:rgba(196,164,90,.08);border-color:var(--gold);transform:translateY(-5px);box-shadow:0 16px 48px rgba(0,0,0,.35)}
+.ls-card-flag{font-size:38px;margin-bottom:14px}
+.ls-card-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:#fff;margin-bottom:6px}
+.ls-card-sec{font-size:9.5px;letter-spacing:1.8px;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.ls-card-desc{font-size:11px;color:rgba(232,223,200,.55);line-height:1.75;margin-bottom:20px}
+.ls-card-btn{display:inline-block;padding:8px 22px;background:var(--gold);color:var(--navy);border-radius:3px;font-size:11px;font-weight:700;letter-spacing:.4px}
+
+/* ── APP ── */
+#app{display:none;flex-direction:column;height:100vh}
+
+.app-header{
+  background:var(--navy);color:#e8dfc8;
+  padding:0 22px;height:50px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 2px 10px rgba(0,0,0,.25)
+}
+.app-logo{font-family:'Playfair Display',serif;font-size:14.5px;letter-spacing:.4px}
+.app-logo span{color:var(--gold)}
+.hdr-actions{display:flex;gap:8px;align-items:center}
+.lang-badge{background:rgba(196,164,90,.18);color:var(--gold);border:1px solid rgba(196,164,90,.3);border-radius:2px;padding:3px 8px;font-size:9.5px;font-weight:700;letter-spacing:1px}
+.hbtn{padding:5px 14px;border-radius:3px;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:500;cursor:pointer;border:none;transition:all .15s;letter-spacing:.3px}
+.hbtn-ghost{background:transparent;color:rgba(232,223,200,.75);border:1px solid rgba(232,223,200,.22)}
+.hbtn-ghost:hover{background:rgba(255,255,255,.08)}
+.hbtn-back{background:rgba(255,255,255,.08);color:rgba(232,223,200,.8);border:1px solid rgba(232,223,200,.2)}
+.hbtn-back:hover{background:rgba(255,255,255,.15);color:#fff}
+.hbtn-gold{background:var(--gold);color:var(--navy);font-weight:700}
+.hbtn-gold:hover{background:#d4b56a}
+
+/* ── WORKSPACE ── */
+.workspace{display:grid;grid-template-columns:400px 1fr;flex:1;overflow:hidden;min-height:0}
+
+/* ── EDITOR ── */
+.editor-panel{background:#fff;border-right:1px solid var(--border);overflow-y:auto}
+.editor-panel::-webkit-scrollbar{width:5px}
+.editor-panel::-webkit-scrollbar-thumb{background:#e0d8c8;border-radius:3px}
+
+.e-sec{border-bottom:1px solid #f0ece3}
+.e-sec-head{padding:12px 20px;background:var(--accent);display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.e-sec-head:hover{background:#ede8dc}
+.e-num{width:20px;height:20px;background:var(--navy);color:#e8dfc8;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.e-sec-head h3{font-size:12px;font-weight:600;color:var(--navy);flex:1}
+.chv{font-size:9px;color:var(--muted);transition:transform .2s}
+.chv.open{transform:rotate(180deg)}
+.e-sec-body{padding:16px 20px;display:none}
+.e-sec-body.open{display:block}
+
+.fg{margin-bottom:11px}
+.fg label{display:block;font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:4px}
+.fg input,.fg textarea{width:100%;background:#fafafa;border:1px solid #e8e0d0;border-radius:4px;font-family:'Inter',sans-serif;font-size:12px;color:var(--text);padding:7px 10px;outline:none;transition:border-color .15s;resize:vertical;line-height:1.6}
+.fg input:focus,.fg textarea:focus{border-color:var(--navy);background:#fff}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hint{font-size:10px;color:#b0a080;font-style:italic;margin-top:4px;line-height:1.5}
+
+.photo-area{border:2px dashed #d0c8b4;border-radius:6px;padding:18px;text-align:center;cursor:pointer;position:relative;min-height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;overflow:hidden;margin-bottom:12px;transition:border-color .15s}
+.photo-area:hover{border-color:var(--navy)}
+.photo-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.photo-area img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.photo-area .ph-label{font-size:11px;color:var(--muted);pointer-events:none}
+
+.chip-wrap{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px}
+.chip{padding:3px 8px 3px 10px;background:var(--accent);border:1px solid var(--border);border-radius:2px;font-size:11px;color:#4a4030;cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:4px}
+.chip.off{opacity:.35;text-decoration:line-through}
+.chip:hover{background:var(--navy);color:#e8dfc8;border-color:var(--navy)}
+.chip-x{font-size:14px;line-height:1;opacity:.6}
+.btn-chip-add{padding:3px 10px;background:transparent;border:1px dashed #c4b89a;border-radius:2px;font-size:11px;color:#b0a48a;cursor:pointer;font-family:'Inter',sans-serif;transition:all .12s}
+.btn-chip-add:hover{border-color:var(--navy);color:var(--navy)}
+
+.skill-entry{margin-bottom:10px}
+.skill-head{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.skill-head input{flex:1;background:#fafafa;border:1px solid #e8e0d0;border-radius:4px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--navy);padding:6px 10px;outline:none}
+.skill-head input:focus{border-color:var(--navy);background:#fff}
+.btn-rm{background:transparent;border:1px solid #e0d8c8;border-radius:3px;color:#c0a8a8;font-size:15px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .12s;line-height:1}
+.btn-rm:hover{background:#fee;border-color:#e08080;color:#c05050}
+.btn-add-row{width:100%;padding:7px;background:transparent;border:1px dashed #c4b89a;border-radius:4px;font-size:11.5px;color:#b0a48a;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px;transition:all .12s}
+.btn-add-row:hover{border-color:var(--navy);color:var(--navy)}
+
+.goal-entry{display:grid;grid-template-columns:26px 1fr 26px;gap:8px;align-items:start;margin-bottom:8px}
+.goal-badge{width:26px;height:26px;background:var(--navy);color:#e8dfc8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:4px;flex-shrink:0}
+
+/* ── PREVIEW ── */
+.preview-panel{overflow-y:auto;background:#dad4cb;padding:26px 18px;display:flex;flex-direction:column;align-items:center}
+.preview-panel::-webkit-scrollbar{width:5px}
+.preview-panel::-webkit-scrollbar-thumb{background:#bbb5a8;border-radius:3px}
+
+/* ── CV DOC ── */
+.cv-doc{width:794px;min-height:1122px;background:#fff;box-shadow:0 4px 32px rgba(0,0,0,.2);font-family:'Source Serif 4',Georgia,serif;color:#1a1a1a}
+
+.cv-hdr{background:var(--navy);padding:24px 36px;display:grid;grid-template-columns:1fr 86px;gap:16px;align-items:end}
+.cv-prog{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:7px;min-height:11px}
+.cv-name{font-family:'Playfair Display',serif;font-size:25px;font-weight:700;color:#fff;margin-bottom:11px;min-height:30px}
+.cv-info-row{display:flex;flex-wrap:wrap;gap:4px 16px}
+.cv-pill{font-size:9.5px;color:#b0a898;display:flex;align-items:center;gap:4px}
+.cv-pill-lbl{color:#607080;font-size:8px;text-transform:uppercase;letter-spacing:1px}
+.cv-photo{width:86px;height:106px;border:1.5px solid rgba(255,255,255,.15);border-radius:2px;object-fit:cover;display:none}
+.cv-photo-ph{width:86px;height:106px;border:1.5px dashed rgba(255,255,255,.15);border-radius:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(255,255,255,.2);font-size:8px;letter-spacing:1px;text-align:center;gap:5px}
+.cv-gold-bar{height:3px;background:linear-gradient(to right,var(--gold),#e8c878,var(--gold))}
+.cv-main{display:grid;grid-template-columns:186px 1fr;min-height:calc(1122px - 164px)}
+
+.cv-sb{background:#f7f4ee;padding:22px 16px;border-right:1px solid #eae4d8}
+.cv-sb-sec{margin-bottom:18px}
+.cv-sb-title{font-family:'Playfair Display',serif;font-size:9.5px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:7px;padding-bottom:4px;border-bottom:1.5px solid var(--gold)}
+.cv-gpa{font-size:10px;line-height:1.85;color:#3a3530;white-space:pre-line}
+.cv-course-item{font-size:9.5px;color:#4a4030;padding:2px 4px 2px 10px;position:relative;line-height:1.55}
+.cv-course-item::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:4px;height:4px;border-radius:50%;background:var(--gold)}
+.cv-skill-item{margin-bottom:7px}
+.cv-skill-name{font-size:9.5px;font-weight:700;color:var(--navy);margin-bottom:2px}
+.cv-skill-detail{font-size:9px;color:#5a5040;line-height:1.7;white-space:pre-line}
+
+.cv-body{padding:22px 28px}
+.cv-sec{margin-bottom:16px}
+.cv-sec-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.cv-sec-title{font-family:'Playfair Display',serif;font-size:12px;font-weight:700;color:var(--navy);white-space:nowrap}
+.cv-sec-rule{flex:1;height:1px;background:linear-gradient(to right,var(--navy),#d4c9b0)}
+.cv-sec-num{font-size:8px;color:var(--gold);letter-spacing:1px;font-family:'Inter',sans-serif}
+.cv-body-text{font-size:10.5px;line-height:1.9;color:#2a2520;white-space:pre-line;text-align:justify}
+.cv-goal-row{display:grid;grid-template-columns:20px 1fr;gap:7px;align-items:start;margin-bottom:5px}
+.cv-goal-num{width:20px;height:20px;background:var(--navy);color:#e8dfc8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;margin-top:2px}
+.cv-goal-text{font-size:10.5px;line-height:1.75;color:#2a2520;white-space:pre-line}
+
+.cv-footer{background:var(--navy);padding:8px 36px;display:flex;justify-content:space-between;align-items:center}
+.cv-footer-l{font-size:8px;color:rgba(232,223,200,.38);letter-spacing:1px;text-transform:uppercase}
+.cv-footer-r{font-size:8px;color:rgba(232,223,200,.28)}
+
+@media print{
+  body{background:#fff;overflow:visible;height:auto}
+  #lang-screen{display:none!important}
+  .app-header{display:none}
+  .workspace{display:block}
+  .editor-panel{display:none}
+  .preview-panel{padding:0;background:#fff;align-items:flex-start;display:block;overflow:visible}
+  .cv-doc{width:100%;box-shadow:none;min-height:0}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LANGUAGE SELECTION ══ -->
+<div id="lang-screen">
+  <a class="ls-back" href="/">← 메인 앱으로</a>
+  <div class="ls-logo">
+    <h1>CV <span>Builder</span></h1>
+    <p>명지대 화학나노학전공 — CV 작성 도구</p>
+  </div>
+  <div class="ls-cards">
+    <div class="ls-card" onclick="selectLang('en')">
+      <div class="ls-card-flag">🇺🇸</div>
+      <div class="ls-card-title">English CV</div>
+      <div class="ls-card-sec">5 Sections</div>
+      <div class="ls-card-desc">Basic Info · Coursework<br>Personal Statement<br>Technical Skills<br>Motivation for Application</div>
+      <div class="ls-card-btn">Start in English →</div>
+    </div>
+    <div class="ls-card" onclick="selectLang('ko')">
+      <div class="ls-card-flag">🇰🇷</div>
+      <div class="ls-card-title">한국어 CV</div>
+      <div class="ls-card-sec">8개 섹션</div>
+      <div class="ls-card-desc">기본 정보 · 수강 과목<br>자기소개 · 기술 역량<br>지원 동기 · 학업 목표<br>협업 역량 · 향후 진로</div>
+      <div class="ls-card-btn">한국어로 시작 →</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+  <header class="app-header">
+    <div style="display:flex;align-items:center;gap:16px">
+      <button class="hbtn hbtn-back" onclick="history.back()">← 메인 앱</button>
+      <div class="app-logo">CV <span>Builder</span> · 화학나노학전공</div>
+    </div>
+    <div class="hdr-actions">
+      <span class="lang-badge" id="hdr-lang">EN</span>
+      <button class="hbtn hbtn-ghost" id="hdr-change" onclick="changeLang()">Change Language</button>
+      <button class="hbtn hbtn-ghost" id="hdr-clear" onclick="clearAll()">Reset</button>
+      <button class="hbtn hbtn-gold" id="hdr-pdf" onclick="window.print()">⬇ PDF Save</button>
+    </div>
+  </header>
+  <div class="workspace">
+    <aside class="editor-panel" id="editor-panel"></aside>
+    <main class="preview-panel">
+      <div class="cv-doc" id="cv-doc"></div>
+    </main>
+  </div>
+</div>
+
+<script>
+/* ══ CONFIG ══ */
+const CFG = {
+  en: {
+    label:'EN', pdfBtn:'⬇ PDF Save', clearBtn:'Reset', changeLangBtn:'Change Language',
+    info:{
+      title:'Basic Information',
+      lb:{name:'Full Name (EN)',dob:'Date of Birth',univ:'University',year:'Year',major:'Major',dept:'Dept / School',email:'Email',phone:'Phone',gpa:'GPA / Scholarship Record'},
+      ph:{name:'Hong Gildong',dob:'YYYY.MM.DD',univ:'Myongji University',year:'Sophomore',major:'Chemistry & Nano Science',dept:'School of Energy Convergence',email:'your@univ.ac.kr',phone:'010-XXXX-XXXX',gpa:'Freshman 1st sem: 4.43/4.5 (Top Honors)\nFreshman 2nd sem: 4.13/4.5\nCumulative GPA: 4.22/4.5'},
+      photoLabel:'Photo Upload (3×4 cm)'
+    },
+    coursework:{
+      title:'Coursework',
+      foundLabel:'Major Foundational Courses',majorLabel:'Major Courses',
+      foundDef:['Chemistry Ⅰ','Chemistry Ⅱ','Physics Ⅰ','Physics Ⅱ','Calculus Ⅰ','Calculus Ⅱ','Chemistry Lab Ⅰ'],
+      majorDef:['Organic Chemistry Ⅰ','Inorganic Chemistry Ⅰ','Analytical Chemistry Ⅰ','Physical Chemistry Ⅰ'],
+      addBtn:'+ Add Course',hint:'※ Click to mark not taken · × to remove'
+    },
+    statement:{
+      title:'Personal Statement',
+      label:'Introduction & Research Direction (English, 3–4 paragraphs)',
+      ph:'[P1] Major & Goals\nI am a [year]-year undergraduate majoring in [major], working toward my goal of becoming a researcher in [field].\n\n[P2] Path to your field of interest\nWhen I first [experience], I realized that [insight]...\n\n[P3] Academic approach & strengths\nI make it a point never to move past something I do not fully understand...\n\n[P4] Teamwork / International experience (optional)\nThrough [activity], I developed [competency]...',
+      hint:'※ Recommended flow: Experience → Insight → Research Goal'
+    },
+    skills:{
+      title:'Technical Skills & Laboratory Experience',
+      namePh:'Field (e.g. Synthesis)',detailPh:'· Specific lab experience\n· Techniques, equipment',
+      addBtn:'+ Add Item',hint:'※ Only list skills you have actually practiced',
+      defaults:[
+        {name:'Nanomaterial Synthesis',detail:'· Synthesized silver nanoparticles; understood nanoscale control over macroscopic properties\n· Attended industry lecture series on semiconductor and radiative cooling materials'},
+        {name:'Lab Safety & Practice',detail:'· Proficient in reagent preparation, heating procedures, and basic instrumentation\n· Completed chemical safety training; consistent adherence to lab regulations'},
+        {name:'Academic Competency',detail:'· Studied thermodynamics and inorganic chemistry via English-language textbooks\n· Experienced in data analysis and producing structured reports and presentations'}
+      ]
+    },
+    motivation:{
+      title:'Motivation for Application',
+      label:'Statement of Motivation (English, 3 paragraphs)',
+      ph:"[P1] Key experience → program theme\nWhen I first [experience], I felt a strong desire to understand [theme]...\n\n[P2] Connect session / experiment to your interests\nThe '[session name]' seminar connects directly to [your course background]. The experiments on [material] represent precisely where my academic interests meet practical application...\n\n[P3] Expected outcomes\nI am eager to work hands-on with [materials/equipment] and contribute [strengths] to the team...",
+      hint:'※ Mentioning specific session names increases persuasiveness'
+    },
+    cv:{
+      progLabel:'2026 Shanghai Summer School — Application',
+      univ:'Univ',year:'Year',major:'Major',tel:'Tel',
+      academicRecord:'Academic Record',foundCourses:'Foundational Courses',majorCourses:'Major Courses',techSkills:'Technical Skills',
+      ps:'Personal Statement',mot:'Motivation for Application',
+      footer:'Curriculum Vitae · Summer School Application'
+    }
+  },
+  ko: {
+    label:'KO', pdfBtn:'⬇ PDF 저장', clearBtn:'초기화', changeLangBtn:'언어 변경',
+    info:{
+      title:'기본 정보',
+      lb:{name:'성명 (영문)',dob:'생년월일',univ:'대학교',year:'학년',major:'전공',dept:'학과 / 학부',email:'이메일',phone:'연락처',gpa:'학점 / 장학금 내역'},
+      ph:{name:'홍길동 (Hong Gildong)',dob:'YYYY.MM.DD',univ:'명지대학교',year:'2학년',major:'화학·나노과학',dept:'에너지융합학부',email:'your@univ.ac.kr',phone:'010-XXXX-XXXX',gpa:'1학년 1학기: 4.43/4.5 (최우수 장학금)\n1학년 2학기: 4.13/4.5\n누적 평점: 4.22/4.5'},
+      photoLabel:'사진 업로드 (3×4 cm)'
+    },
+    coursework:{
+      title:'수강 과목',
+      foundLabel:'기초 교양 · 전필 과목',majorLabel:'전공 과목',
+      foundDef:['일반화학Ⅰ','일반화학Ⅱ','물리학Ⅰ','물리학Ⅱ','미적분학Ⅰ','미적분학Ⅱ','화학실험Ⅰ'],
+      majorDef:['유기화학Ⅰ','무기화학Ⅰ','분석화학Ⅰ','물리화학Ⅰ'],
+      addBtn:'+ 과목 추가',hint:'※ 클릭 시 취소선(미수강 처리) · × 버튼으로 삭제'
+    },
+    statement:{
+      title:'자기소개 및 연구 방향',
+      label:'자기소개서 (영문 작성 권장, 3–4 문단)',
+      ph:'[문단 1] 전공 및 목표 소개\n저는 [대학교] [전공]을 전공하는 [학년]으로, [분야] 연구자를 목표로 하고 있습니다.\n\n[문단 2] 관심 분야로 이어진 계기 (구체적 경험 + 깨달음)\n[경험]을 처음 접했을 때, [깨달음]을 얻게 되었습니다...\n\n[문단 3] 학업 태도 · 강점\n이해하지 못한 내용을 절대 그냥 넘어가지 않는 것을 원칙으로 합니다...\n\n[문단 4] 팀워크 / 국제 경험 (선택)\n[활동]을 통해 [역량]을 키웠습니다...',
+      hint:'※ 경험 → 깨달음 → 연구 목표 흐름 권장'
+    },
+    skills:{
+      title:'기술 역량 및 실험 경험',
+      namePh:'분야명 (예: 나노소재 합성)',detailPh:'· 구체적 실험 경험 기술\n· 관련 분석 기법, 장비 운용',
+      addBtn:'+ 항목 추가',hint:'※ 실제 경험한 기술만 기재 (과장 지양)',
+      defaults:[
+        {name:'나노소재 합성',detail:'· 은 나노입자 합성 실험 수행; 나노 단위 제어가 거시적 특성에 미치는 영향 이해\n· 반도체·복사냉각 소재 관련 산업체 강연 참석'},
+        {name:'실험실 안전 및 실습',detail:'· 시약 조제, 가열 실험, 기본 기기 운용 숙련\n· 화학 안전 교육 이수; 실험실 규정 철저 준수'},
+        {name:'학업 역량 및 수상 이력',detail:'· 영문 교재를 통한 열역학·무기화학 심화 학습\n· 데이터 분석 및 체계적 보고서·발표 자료 작성 경험'}
+      ]
+    },
+    motivation:{
+      title:'지원 동기',
+      label:'지원 동기 (영문 작성 권장, 3 문단)',
+      ph:"[문단 1] 핵심 경험 → 프로그램 주제 연결\n[경험]을 통해 [프로그램 주제]에 대한 강한 탐구 의욕을 갖게 되었습니다...\n\n[문단 2] 세션명 · 실험과 관심사 연결\n'[세션명]' 세미나는 [본인 경험/과목]과 직결됩니다. [소재명] 관련 그룹 실험은 학문적 관심과 실습이 만나는 지점입니다...\n\n[문단 3] 참가 후 기대 효과\n[재료/기기]를 직접 다루며 [본인 강점]을 팀에 기여하고 싶습니다...",
+      hint:'※ 프로그램 세션명을 구체적으로 언급하면 설득력 ↑'
+    },
+    goals:{
+      title:'학업 목표',
+      ph:'목표 제목 + 달성 방법\n예) 열소재 설계 역량 강화 — [재료] 관련 실험을 통해 실무 능력을 함양한다...',
+      addBtn:'+ 목표 추가',
+      defaults:[
+        '열소재 설계 역량 강화 — [재료] 관련 그룹 실험을 통해 소재 설계 실무 능력을 함양한다.',
+        '탄소 중립 기술 습득 — 전문가 강연 및 워크숍을 통해 에너지 소재와 지속 가능 개발에 관한 다양한 시각을 교류한다.',
+        '학업 성과 검증 — 데이터 기반 보고서를 작성하고 최종 평가(70% 반영)를 통해 발표 역량을 강화한다.',
+        '글로벌 소통 역량 — 문화 프로그램 및 협력 프로젝트를 통해 다국적 연구 역량을 배양한다.'
+      ]
+    },
+    collab:{
+      title:'협업 역량 및 기여 활동',
+      ph:'[협업 능력] 실험 파트너십, 팀 프로젝트, 리더십 경험\n예) 실험 수업에서 2인 1조로 진행하며 각자의 강점을 파악하여 역할을 분담하였습니다...\n\n[국제 경험] 해외 봉사, 교환 프로그램, 다국적 팀\n예) [연도]년 [국가]에서의 해외 봉사에서 [역할]을 담당하였습니다...\n\n[발표 · 보고서 역량]\n예) 실험 데이터를 분석하여 체계적인 보고서를 작성하고 발표한 경험이 있습니다...',
+      hint:'※ 구체적 사례(국가, 활동명, 역할) 포함 시 신뢰도 ↑'
+    },
+    career:{
+      title:'향후 진로 계획 및 포부',
+      ph:'· 귀국 후 단기 계획: [연구센터] 세미나 참여, [연구실] 인턴십 지원 등\n· 졸업 후 목표 직군 및 연구 분야\n· 본 프로그램이 커리어에 기여하는 방식\n\n예) 귀국 후 [연구센터]의 세미나에 참여하고 [주제] 연구를 심화할 계획입니다. 장기적으로는 [분야] 전문 연구자가 되는 것을 목표로 하며, 이번 프로그램은 그 발판이 될 것입니다.'
+    },
+    cv:{
+      progLabel:'2026 상하이 서머스쿨 — 지원서',
+      univ:'대학',year:'학년',major:'전공',tel:'연락처',
+      academicRecord:'학업 성적',foundCourses:'기초 과목',majorCourses:'전공 과목',techSkills:'기술 역량',
+      ps:'자기소개',mot:'지원 동기',goals:'학업 목표',collab:'협업 역량',career:'향후 진로 계획',
+      footer:'이력서 · 서머스쿨 지원서'
+    }
+  }
+};
+
+/* ══ STATE ══ */
+let lang = null;
+let _id = 0;
+const S = {
+  name:'',dob:'',univ:'',year:'',major:'',dept:'',email:'',phone:'',gpa:'',
+  foundChips:[],majorChips:[],skills:[],
+  ps:'',mot:'',goals:[],collab:'',career:'',
+  photo:null
+};
+
+/* ══ ENTRY ══ */
+function selectLang(l) {
+  lang = l;
+  const c = CFG[l];
+  document.getElementById('lang-screen').style.display = 'none';
+  const app = document.getElementById('app');
+  app.style.display = 'flex';
+  app.style.flexDirection = 'column';
+  app.style.height = '100vh';
+  document.getElementById('hdr-lang').textContent = c.label;
+  document.getElementById('hdr-change').textContent = c.changeLangBtn;
+  document.getElementById('hdr-clear').textContent = c.clearBtn;
+  document.getElementById('hdr-pdf').textContent = c.pdfBtn;
+  resetState();
+  buildEditor();
+  buildCVShell();
+  initDefaults();
+  sync();
+}
+
+function changeLang() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('lang-screen').style.display = 'flex';
+  lang = null;
+}
+
+function resetState() {
+  S.name=S.dob=S.univ=S.year=S.major=S.dept=S.email=S.phone=S.gpa=S.ps=S.mot=S.collab=S.career='';
+  S.foundChips=[]; S.majorChips=[]; S.skills=[]; S.goals=[]; S.photo=null; _id=0;
+}
+
+/* ══ EDITOR ══ */
+function buildEditor() {
+  const c = CFG[lang];
+  const sections = [
+    sec(1, c.info.title, true, infoBody()),
+    sec(2, c.coursework.title, false, courseworkBody()),
+    sec(3, c.statement.title, false, statementBody()),
+    sec(4, c.skills.title, false, skillsBody()),
+    sec(5, c.motivation.title, false, motivationBody()),
+  ];
+  if (lang === 'ko') {
+    sections.push(
+      sec(6, c.goals.title, false, goalsBody()),
+      sec(7, c.collab.title, false, collabBody()),
+      sec(8, c.career.title, false, careerBody())
+    );
+  }
+  document.getElementById('editor-panel').innerHTML = sections.join('');
+}
+
+function sec(n, title, open, body) {
+  return `<div class="e-sec">
+    <div class="e-sec-head" onclick="toggleSec(this)">
+      <div class="e-num">${n}</div><h3>${title}</h3>
+      <span class="chv ${open?'open':''}">▲</span>
+    </div>
+    <div class="e-sec-body ${open?'open':''}">${body}</div>
+  </div>`;
+}
+
+function fg(label, html) { return `<div class="fg"><label>${label}</label>${html}</div>`; }
+
+function infoBody() {
+  const {lb,ph,photoLabel} = CFG[lang].info;
+  return `<div class="photo-area">
+    <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#c4b89a" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    <span class="ph-label">${photoLabel}<br><small style="opacity:.7">JPG / PNG</small></span>
+    <input type="file" accept="image/*" onchange="uploadPhoto(this)">
+    <img id="photo-thumb" style="display:none">
+  </div>
+  <div class="two-col">
+    ${fg(lb.name,`<input type="text" id="f-name" placeholder="${ph.name}" oninput="inp('name',this.value)">`)}
+    ${fg(lb.dob,`<input type="text" id="f-dob" placeholder="${ph.dob}" oninput="inp('dob',this.value)">`)}
+    ${fg(lb.univ,`<input type="text" id="f-univ" placeholder="${ph.univ}" oninput="inp('univ',this.value)">`)}
+    ${fg(lb.year,`<input type="text" id="f-year" placeholder="${ph.year}" oninput="inp('year',this.value)">`)}
+    ${fg(lb.major,`<input type="text" id="f-major" placeholder="${ph.major}" oninput="inp('major',this.value)">`)}
+    ${fg(lb.dept,`<input type="text" id="f-dept" placeholder="${ph.dept}" oninput="inp('dept',this.value)">`)}
+    ${fg(lb.email,`<input type="email" id="f-email" placeholder="${ph.email}" oninput="inp('email',this.value)">`)}
+    ${fg(lb.phone,`<input type="text" id="f-phone" placeholder="${ph.phone}" oninput="inp('phone',this.value)">`)}
+  </div>
+  ${fg(lb.gpa,`<textarea id="f-gpa" rows="4" placeholder="${enc(ph.gpa)}" oninput="inp('gpa',this.value)"></textarea>`)}`;
+}
+
+function courseworkBody() {
+  const c = CFG[lang].coursework;
+  return `<div class="fg"><label>${c.foundLabel}</label>
+    <div class="chip-wrap" id="found-chips"></div>
+    <button class="btn-chip-add" onclick="addChip('found','found')">${c.addBtn}</button>
+  </div>
+  <div class="fg" style="margin-top:8px"><label>${c.majorLabel}</label>
+    <div class="chip-wrap" id="major-chips"></div>
+    <button class="btn-chip-add" onclick="addChip('major','major')">${c.addBtn}</button>
+  </div>
+  <p class="hint">${c.hint}</p>`;
+}
+
+function statementBody() {
+  const c = CFG[lang].statement;
+  return `${fg(c.label,`<textarea id="f-ps" rows="11" placeholder="${enc(c.ph)}" oninput="inp('ps',this.value)"></textarea>`)}
+  <p class="hint">${c.hint}</p>`;
+}
+
+function skillsBody() {
+  const c = CFG[lang].skills;
+  return `<div id="skill-list"></div>
+  <button class="btn-add-row" onclick="addSkillRow()">${c.addBtn}</button>
+  <p class="hint">${c.hint}</p>`;
+}
+
+function motivationBody() {
+  const c = CFG[lang].motivation;
+  return `${fg(c.label,`<textarea id="f-mot" rows="9" placeholder="${enc(c.ph)}" oninput="inp('mot',this.value)"></textarea>`)}
+  <p class="hint">${c.hint}</p>`;
+}
+
+function goalsBody() {
+  return `<div id="goal-list"></div>
+  <button class="btn-add-row" onclick="addGoalRow()">${CFG.ko.goals.addBtn}</button>`;
+}
+
+function collabBody() {
+  const c = CFG.ko.collab;
+  return `${fg('',`<textarea id="f-collab" rows="8" placeholder="${enc(c.ph)}" oninput="inp('collab',this.value)"></textarea>`)}
+  <p class="hint">${c.hint}</p>`;
+}
+
+function careerBody() {
+  return fg('',`<textarea id="f-career" rows="7" placeholder="${enc(CFG.ko.career.ph)}" oninput="inp('career',this.value)"></textarea>`);
+}
+
+/* ══ CV SHELL ══ */
+function buildCVShell() {
+  const cv = CFG[lang].cv;
+  const isKo = lang === 'ko';
+  const mainSections = `
+    ${cvSec('01', cv.ps, `<div class="cv-body-text" id="cv-ps">—</div>`)}
+    ${cvSec('02', cv.mot, `<div class="cv-body-text" id="cv-mot">—</div>`)}
+    ${isKo ? `
+    ${cvSec('03', cv.goals, `<div id="cv-goals"></div>`)}
+    ${cvSec('04', cv.collab, `<div class="cv-body-text" id="cv-collab">—</div>`)}
+    ${cvSec('05', cv.career, `<div class="cv-body-text" id="cv-career">—</div>`)}
+    ` : ''}
+  `;
+  document.getElementById('cv-doc').innerHTML = `
+    <div class="cv-hdr">
+      <div>
+        <div class="cv-prog">${cv.progLabel}</div>
+        <div class="cv-name" id="cv-name">${isKo?'이름':'Your Name'}</div>
+        <div class="cv-info-row">
+          <div class="cv-pill"><span class="cv-pill-lbl">${cv.univ}</span>&nbsp;<span id="cv-univ">—</span></div>
+          <div class="cv-pill"><span class="cv-pill-lbl">${cv.year}</span>&nbsp;<span id="cv-year">—</span></div>
+          <div class="cv-pill"><span class="cv-pill-lbl">${cv.major}</span>&nbsp;<span id="cv-major">—</span></div>
+          <div class="cv-pill"><span class="cv-pill-lbl">Email</span>&nbsp;<span id="cv-email">—</span></div>
+          <div class="cv-pill"><span class="cv-pill-lbl">${cv.tel}</span>&nbsp;<span id="cv-phone">—</span></div>
+        </div>
+      </div>
+      <div>
+        <img id="cv-photo" class="cv-photo" alt="">
+        <div class="cv-photo-ph" id="cv-photo-ph">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.22)" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          <span>${isKo?'사진':'PHOTO'}<br>3×4</span>
+        </div>
+      </div>
+    </div>
+    <div class="cv-gold-bar"></div>
+    <div class="cv-main">
+      <aside class="cv-sb">
+        <div class="cv-sb-sec"><div class="cv-sb-title">${cv.academicRecord}</div><div class="cv-gpa" id="cv-gpa">—</div></div>
+        <div class="cv-sb-sec"><div class="cv-sb-title">${cv.foundCourses}</div><div id="cv-found"></div></div>
+        <div class="cv-sb-sec"><div class="cv-sb-title">${cv.majorCourses}</div><div id="cv-major-c"></div></div>
+        <div class="cv-sb-sec"><div class="cv-sb-title">${cv.techSkills}</div><div id="cv-skills"></div></div>
+      </aside>
+      <div class="cv-body">${mainSections}</div>
+    </div>
+    <div class="cv-footer">
+      <div class="cv-footer-l">${cv.footer}</div>
+      <div class="cv-footer-r" id="cv-date"></div>
+    </div>`;
+  document.getElementById('cv-date').textContent =
+    new Date().toLocaleDateString(isKo?'ko-KR':'en-US',{year:'numeric',month:'long',day:'numeric'});
+}
+
+function cvSec(num, title, content) {
+  return `<div class="cv-sec"><div class="cv-sec-head">
+    <div class="cv-sec-title">${title}</div><div class="cv-sec-rule"></div>
+    <div class="cv-sec-num">${num}</div></div>${content}</div>`;
+}
+
+/* ══ DEFAULTS ══ */
+function initDefaults() {
+  const c = CFG[lang];
+  c.coursework.foundDef.forEach(n => S.foundChips.push({id:++_id,name:n,on:true}));
+  c.coursework.majorDef.forEach(n => S.majorChips.push({id:++_id,name:n,on:true}));
+  c.skills.defaults.forEach(s => S.skills.push({id:++_id,name:s.name,detail:s.detail}));
+  if (lang==='ko') CFG.ko.goals.defaults.forEach(t => S.goals.push({id:++_id,text:t}));
+  renderChips(); renderSkills(); if (lang==='ko') renderGoals();
+}
+
+/* ══ SYNC ══ */
+function inp(k,v){S[k]=v;sync();}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+
+function sync() {
+  if (!lang) return;
+  setText('cv-name', S.name||(lang==='ko'?'이름':'Your Name'));
+  setText('cv-univ', S.univ||'—'); setText('cv-year', S.year||'—');
+  setText('cv-major', S.major||'—'); setText('cv-email', S.email||'—');
+  setText('cv-phone', S.phone||'—'); setText('cv-gpa', S.gpa||'—');
+  setText('cv-ps', S.ps||'—'); setText('cv-mot', S.mot||'—');
+  if (lang==='ko') {
+    setText('cv-collab', S.collab||'—'); setText('cv-career', S.career||'—');
+    syncGoals();
+  }
+  syncCourses('cv-found', S.foundChips); syncCourses('cv-major-c', S.majorChips);
+  syncSkills();
+}
+
+function syncCourses(id, arr) {
+  const el=document.getElementById(id); if(!el)return;
+  const a=arr.filter(c=>c.on);
+  el.innerHTML=a.length?a.map(c=>`<div class="cv-course-item">${esc(c.name)}</div>`).join(''):'<div style="font-size:9px;color:#ccc">—</div>';
+}
+
+function syncSkills() {
+  const el=document.getElementById('cv-skills'); if(!el)return;
+  el.innerHTML=S.skills.length?S.skills.map(s=>`<div class="cv-skill-item"><div class="cv-skill-name">${esc(s.name)||'—'}</div><div class="cv-skill-detail">${esc(s.detail)}</div></div>`).join(''):'<div style="font-size:9px;color:#ccc">—</div>';
+}
+
+function syncGoals() {
+  const el=document.getElementById('cv-goals'); if(!el)return;
+  el.innerHTML=S.goals.length?S.goals.map((g,i)=>`<div class="cv-goal-row"><div class="cv-goal-num">${i+1}</div><div class="cv-goal-text">${esc(g.text)||'—'}</div></div>`).join(''):'<div style="font-size:10px;color:#ccc">—</div>';
+}
+
+/* ══ CHIPS ══ */
+function addChip(prefix, type) {
+  const name=prompt(lang==='ko'?'과목명 입력:':'Enter course name:');
+  if(!name)return;
+  const arr=type==='found'?S.foundChips:S.majorChips;
+  arr.push({id:++_id,name,on:true});
+  renderChips(); sync();
+}
+
+function toggleChip(type,id) {
+  const arr=type==='found'?S.foundChips:S.majorChips;
+  const c=arr.find(x=>x.id===id); if(c)c.on=!c.on;
+  renderChips(); sync();
+}
+
+function removeChip(type,id) {
+  if(type==='found') S.foundChips=S.foundChips.filter(x=>x.id!==id);
+  else S.majorChips=S.majorChips.filter(x=>x.id!==id);
+  renderChips(); sync();
+}
+
+function renderChips() {
+  ['found','major'].forEach(t=>{
+    const wrap=document.getElementById(`${t}-chips`); if(!wrap)return;
+    const arr=t==='found'?S.foundChips:S.majorChips;
+    wrap.innerHTML=arr.map(c=>`<div class="chip${c.on?'':' off'}">
+      <span onclick="toggleChip('${t}',${c.id})">${esc(c.name)}</span>
+      <span class="chip-x" onclick="removeChip('${t}',${c.id})">×</span>
+    </div>`).join('');
+  });
+}
+
+/* ══ SKILLS ══ */
+function addSkillRow(){S.skills.push({id:++_id,name:'',detail:''});renderSkills();}
+
+function removeSkill(id){S.skills=S.skills.filter(s=>s.id!==id);renderSkills();sync();}
+
+function updSkill(id,k,v){const s=S.skills.find(x=>x.id===id);if(s){s[k]=v;sync();}}
+
+function renderSkills(){
+  const list=document.getElementById('skill-list'); if(!list)return;
+  const c=CFG[lang].skills;
+  list.innerHTML=S.skills.map(s=>`<div class="skill-entry">
+    <div class="skill-head">
+      <input type="text" placeholder="${c.namePh}" value="${esc(s.name)}" oninput="updSkill(${s.id},'name',this.value)">
+      <button class="btn-rm" onclick="removeSkill(${s.id})">×</button>
+    </div>
+    <textarea rows="3" placeholder="${enc(c.detailPh)}" oninput="updSkill(${s.id},'detail',this.value)">${esc(s.detail)}</textarea>
+  </div>`).join('');
+}
+
+/* ══ GOALS (KO) ══ */
+function addGoalRow(){S.goals.push({id:++_id,text:''});renderGoals();}
+
+function removeGoal(id){S.goals=S.goals.filter(g=>g.id!==id);renderGoals();syncGoals();}
+
+function updGoal(id,v){const g=S.goals.find(x=>x.id===id);if(g){g.text=v;syncGoals();}}
+
+function renderGoals(){
+  const list=document.getElementById('goal-list'); if(!list)return;
+  const c=CFG.ko.goals;
+  list.innerHTML=S.goals.map((g,i)=>`<div class="goal-entry">
+    <div class="goal-badge">${i+1}</div>
+    <textarea rows="3" placeholder="${enc(c.ph)}" oninput="updGoal(${g.id},this.value)">${esc(g.text)}</textarea>
+    <button class="btn-rm" onclick="removeGoal(${g.id})">×</button>
+  </div>`).join('');
+}
+
+/* ══ PHOTO ══ */
+function uploadPhoto(input){
+  if(!input.files?.[0])return;
+  const r=new FileReader();
+  r.onload=e=>{
+    S.photo=e.target.result;
+    const t=document.getElementById('photo-thumb');
+    const p=document.getElementById('cv-photo');
+    const ph=document.getElementById('cv-photo-ph');
+    if(t){t.src=S.photo;t.style.display='block';}
+    if(p){p.src=S.photo;p.style.display='block';}
+    if(ph)ph.style.display='none';
+    const lbl=document.querySelector('.photo-area .ph-label');
+    if(lbl)lbl.style.display='none';
+  };
+  r.readAsDataURL(input.files[0]);
+}
+
+/* ══ ACCORDION ══ */
+function toggleSec(head){
+  const body=head.nextElementSibling;
+  const ch=head.querySelector('.chv');
+  const open=body.classList.contains('open');
+  body.classList.toggle('open',!open);
+  ch.classList.toggle('open',!open);
+}
+
+/* ══ CLEAR ══ */
+function clearAll(){
+  const msg=lang==='ko'?'모든 입력 내용을 초기화하시겠습니까?':'Reset all content?';
+  if(!confirm(msg))return;
+  resetState();
+  document.querySelectorAll('#editor-panel input[type=text],#editor-panel input[type=email],#editor-panel textarea')
+    .forEach(el=>el.value='');
+  initDefaults(); sync();
+}
+
+/* ══ UTILS ══ */
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function enc(s){return(s||'').replace(/\n/g,'&#10;');}
+</script>
+</body>
+</html>

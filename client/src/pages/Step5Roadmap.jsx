@@ -248,7 +248,7 @@ export default function Step5Roadmap() {
   const catalogCourses = ALL_COURSES
     .filter(c => c.isUpperChoice)
     .map(c => ({ ...c, status: courseStatusMap.get(c.id) ?? 'dim' }));
-  const SEM_CATALOG = { Y3S1: '3-1', Y3S2: '3-2', Y4S1: '4-1', Y4S2: '4-2' };
+  const SEM_CATALOG = { Y3S1: '3-1', Y3S2: '3-2/4-2', Y4S1: '4-1', Y4S2: '4-2' };
 
   // 3학년 / 4학년 그룹
   const yearGroups = [
@@ -419,9 +419,8 @@ export default function Step5Roadmap() {
         </label>
       </div>
 
-      {/* ─ 2열 레이아웃: 좌=로드맵, 우=교과목 카탈로그 ─ */}
-      <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-      <div style={{ flex: 1, minWidth: 0 }}>
+      {/* 로드맵 */}
+      <div>
 
       {/* 1학년 */}
       <div style={{ fontSize: 11, fontWeight: 600, color: '#888', marginBottom: 6, paddingBottom: 3, borderBottom: '0.5px solid #e0e0dc' }}>
@@ -533,7 +532,7 @@ export default function Step5Roadmap() {
               )}
 
               {isGradYear && careerPath?.y4s2Type === 'D학기제' && (
-                <div style={{ borderRadius: 8, border: '1.5px solid #534AB7', overflow: 'hidden' }}>
+                <div style={{ borderRadius: 8, border: '1.5px solid #534AB7', overflow: 'hidden', background: '#FFFBEB' }}>
                   <div style={{ padding: '5px 10px', fontSize: 10, fontWeight: 600, background: '#534AB718', color: '#534AB7', borderBottom: '1px solid #534AB730', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span>4학년 2학기</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -552,7 +551,7 @@ export default function Step5Roadmap() {
                           <div key={c.id} onClick={() => handleCourseClick(c)} style={{
                             padding: '4px 8px', borderRadius: 5, fontSize: 10,
                             border: `1px solid ${mod?.color ?? '#534AB7'}60`,
-                            background: activeCourse?.id === c.id ? (mod?.color ?? '#534AB7') : (mod?.bg ?? '#EEEDFE'),
+                            background: activeCourse?.id === c.id ? (mod?.color ?? '#534AB7') : '#FFFBEB',
                             color: activeCourse?.id === c.id ? '#fff' : (mod?.color ?? '#534AB7'),
                             fontWeight: 500, cursor: 'pointer', transition: 'all .12s',
                             display: 'flex', alignItems: 'center', gap: 4,
@@ -624,11 +623,9 @@ export default function Step5Roadmap() {
         );
       })}
 
-      </div>{/* left col end */}
-
-      {/* ─ 우측: 전체 3·4학년 교과목 카탈로그 ─ */}
-      <div style={{ width: 190, flexShrink: 0, position: 'sticky', top: 10, maxHeight: '92vh', overflowY: 'auto' }}>
-        <div style={{ fontSize: 10, fontWeight: 700, color: '#555', marginBottom: 5, paddingBottom: 3, borderBottom: '0.5px solid #e0e0dc' }}>
+      {/* ─ 3·4학년 교과목 전체 (로드맵 하단) ─ */}
+      <div style={{ marginTop: 20, borderTop: '0.5px solid #e0e0dc', paddingTop: 12 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#534AB7', marginBottom: 8, paddingBottom: 4, borderBottom: '0.5px solid #534AB740' }}>
           3·4학년 교과목 전체
         </div>
         {activeCourse && (
@@ -636,7 +633,7 @@ export default function Step5Roadmap() {
             <CoursePopover course={activeCourse} onClose={() => setActiveCourse(null)} />
           </div>
         )}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 4 }}>
           {catalogCourses.map(c => {
             const mod = c.module ? MODULES[c.module] : null;
             const isActive = activeCourse?.id === c.id;
@@ -665,7 +662,7 @@ export default function Step5Roadmap() {
                 )}
                 <span style={{ flex: 1, lineHeight: 1.35 }}>{c.name}</span>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1, flexShrink: 0 }}>
-                  <span style={{ fontSize: 7, opacity: .6 }}>{SEM_CATALOG[c.semester]}</span>
+                  <span style={{ fontSize: 7, opacity: .6 }}>{c.id === 'cap1' ? '3-1/4-1' : SEM_CATALOG[c.semester]}</span>
                   {c.ippRequired && (
                     <span style={{ fontSize: 6, padding: '0 2px', borderRadius: 2, background: isActive ? '#fff3' : '#0369A1', color: '#fff' }}>IPP</span>
                   )}
@@ -679,7 +676,7 @@ export default function Step5Roadmap() {
         </div>
       </div>
 
-      </div>{/* flex layout end */}
+      </div>
 
       {/* 마이크로디그리 + 융합전공 상세 */}
       {(microDegrees.length > 0 || careerPath?.fusionMajorRec) && (
@@ -697,19 +694,8 @@ export default function Step5Roadmap() {
                 <div style={{ fontSize: 12, fontWeight: 600, color: md.color }}>{md.name}</div>
               </div>
               {md.completionRule && (
-                <div style={{ fontSize: 10, color: md.color, opacity: .8, marginBottom: 4, lineHeight: 1.5 }}>
+                <div style={{ fontSize: 10, color: md.color, opacity: .8, marginBottom: 4, lineHeight: 1.6, whiteSpace: 'pre-line' }}>
                   수료 요건: {md.completionRule}
-                </div>
-              )}
-              {md.crossDeptRequired && md.crossDeptRequired.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 2 }}>
-                  <span style={{ fontSize: 9, color: md.color, opacity: .7 }}>타학과 이수 필요:</span>
-                  {md.crossDeptRequired.map((c, i) => (
-                    <span key={i} style={{
-                      fontSize: 9, padding: '1px 6px', borderRadius: 2,
-                      border: `0.5px solid ${md.color}50`, color: md.color, background: '#fff8',
-                    }}>{c.name} ({c.dept})</span>
-                  ))}
                 </div>
               )}
             </div>

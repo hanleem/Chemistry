@@ -31,4 +31,9 @@ export const api = {
   listCourseDescs: ()                 => request('/course-descs'),
   saveCourseDesc:  (courseId, body)   => request(`/course-descs/${courseId}`, { method: 'PUT', body: JSON.stringify(body) }),
   deleteCourseDesc:(courseId)         => request(`/course-descs/${courseId}`, { method: 'DELETE' }),
+
+  // notices (GET is public; POST/DELETE require admin)
+  listNotices:   ()     => request('/notices'),
+  createNotice:  (body) => request('/notices', { method: 'POST', body: JSON.stringify(body) }),
+  deleteNotice:  (id)   => request(`/notices/${id}`, { method: 'DELETE' }),
 };

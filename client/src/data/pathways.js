@@ -93,18 +93,15 @@ export const MICRO_DEGREES = [
     shortName: '에너지소재설계·분석',
     color: '#0369A1',
     bg: '#E0F2FE',
-    // 수료 요건 (2027년 이후): 소재캡스톤디자인1·2 필수 + 나머지 과목 중 2개 이수
-    requiredCourseIds: ['cap1', 'cap2'],
-    electiveCourseIds: ['energy_mod', 'energy_chem'],
-    // 융합에너지학과 이수 필요 과목 (우리 학과 외)
+    requiredCourseIds: ['cap1'],
+    electiveCourseIds: ['cap2', 'energy_mod', 'energy_chem', 'adv_sem', 'ec_ana'],
     crossDeptRequired: [
       { name: '나노계측론', dept: '융합에너지학과' },
       { name: '나노공정개론', dept: '융합에너지학과' },
     ],
-    completionRule: '소재캡스톤디자인1·2 필수 + {에너지소재모델링, 에너지화학, 나노계측론, 나노공정개론} 중 2과목 이수 (2027년 이후)',
-    // 매칭용 전체 과목 id (1개 이상 겹치면 관련 표시)
-    allCourseIds: ['cap1', 'cap2', 'energy_mod', 'energy_chem', 'inorg_syn', 'cat_des', 'nano_mat', 'func_poly', 'nano_basic', 'oc_syn', 'adv_cap'],
-    desc: '에너지·바이오 분야 심화 과목 + 소재캡스톤 공통 이수 (2027년 이후 적용)',
+    completionRule: '소재캡스톤디자인1 필수 + 아래 과목 중 3과목 이수 (총 12학점)\n화학과: 소재캡스톤디자인2, 에너지소재모델링, 에너지화학, 첨단에너지소재세미나, 기기분석:전기분석\n융합에너지학과: 나노계측론, 나노공정개론',
+    allCourseIds: ['cap1', 'cap2', 'energy_mod', 'energy_chem', 'adv_sem', 'ec_ana'],
+    desc: '',
   },
   {
     id: 'mds_energy_nano',

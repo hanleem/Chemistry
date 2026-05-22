@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
+import NoticeModal from './NoticeModal';
 
 export default function AuthPage() {
   const [mode, setMode] = useState('login'); // 'login' | 'register'
@@ -8,6 +9,7 @@ export default function AuthPage() {
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [noticeOpen, setNoticeOpen] = useState(false);
   const { login, register } = useAuthStore();
 
   const onSubmit = async (e) => {
@@ -34,6 +36,7 @@ export default function AuthPage() {
       maxWidth: 360, margin: '60px auto', padding: '0 20px 40px',
       fontFamily: 'system-ui, -apple-system, sans-serif',
     }}>
+      {noticeOpen && <NoticeModal onClose={() => setNoticeOpen(false)} />}
 
       {/* ── 바로가기 버튼 2개 ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
@@ -53,8 +56,9 @@ export default function AuthPage() {
         >
           <span style={{ fontSize: 22 }}>💻</span>
           <span>
-            <div style={{ fontWeight: 700, fontSize: 13 }}>컴퓨터 예약 시스템</div>
+            <div style={{ fontWeight: 700, fontSize: 13 }}>컴퓨터 예약 시스템(23639호)</div>
             <div style={{ fontSize: 11, opacity: 0.75, marginTop: 2 }}>실습실 좌석 예약하기</div>
+            <div style={{ fontSize: 10, opacity: 0.6, marginTop: 2 }}>9월 OPEN 예정</div>
           </span>
         </button>
       </div>
@@ -109,6 +113,22 @@ export default function AuthPage() {
           </button>
         </form>
       </div>
+
+      {/* ── 공지사항 버튼 ── */}
+      <button
+        onClick={() => setNoticeOpen(true)}
+        style={{
+          width: '100%', padding: '13px 0', marginTop: 10,
+          borderRadius: 10, border: '2px solid #F59E0B',
+          background: '#FFFBEB', color: '#B45309',
+          fontSize: 14, fontWeight: 800, cursor: 'pointer',
+          letterSpacing: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          boxShadow: '0 2px 8px rgba(245,158,11,0.2)',
+        }}
+      >
+        <span style={{ fontSize: 18 }}>📢</span>
+        !! 공지사항 확인하기 !!
+      </button>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { Step2BaseMod, Step3Upper, Step4AdvMod } from './pages/Steps2_3_4';
 import Step5Roadmap from './pages/Step5Roadmap';
 import AdminPage from './pages/AdminPage';
 import AuthPage from './pages/AuthPage';
+import NoticeModal from './pages/NoticeModal';
 import { CAREER_PATH_BY_ID } from './data/careerPaths';
 import { loadAdminOverrides } from './data/courseDescs';
 
@@ -22,6 +23,7 @@ const STEP_COMPONENTS = {
 
 export default function App() {
   const [adminOpen, setAdminOpen] = useState(false);
+  const [noticeOpen, setNoticeOpen] = useState(false);
   const { user, loading, init, logout } = useAuthStore();
   const { step, basicIds, upperIds, careerPathId, fetchRoadmaps, resetAll } = useSelectionStore();
   const Page = STEP_COMPONENTS[step] ?? Step0Career;
@@ -70,6 +72,55 @@ export default function App() {
       padding: '16px 14px',
       fontFamily: 'system-ui, -apple-system, sans-serif',
     }}>
+      {/* ── 상단 빠른 접근 바 (2×2) ── */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: 8,
+        marginBottom: 12,
+      }}>
+        <button
+          onClick={() => setNoticeOpen(true)}
+          style={quickNavStyle('#FFFBEB', '#F59E0B', '#B45309')}
+        >
+          <span>📢</span>
+          <span style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+            <span style={{ fontWeight: 700, fontSize: 12 }}>공지사항</span>
+            <span style={{ fontSize: 10, opacity: 0.7, marginTop: 1 }}>새 소식 확인하기</span>
+          </span>
+        </button>
+        <button
+          onClick={() => window.open('/fair/', '_blank')}
+          style={quickNavStyle('linear-gradient(135deg,#0d2137,#1a3a5c)', 'none', '#fff')}
+        >
+          <span>🔬</span>
+          <span style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+            <span style={{ fontWeight: 700, fontSize: 12 }}>연구실 박람회</span>
+            <span style={{ fontSize: 10, opacity: 0.7, marginTop: 1 }}>랩실 탐색하기</span>
+          </span>
+        </button>
+        <button
+          onClick={() => window.open('/reservation/', '_blank')}
+          style={quickNavStyle('linear-gradient(135deg,#185FA5,#1d7ec2)', 'none', '#fff')}
+        >
+          <span>💻</span>
+          <span style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+            <span style={{ fontWeight: 700, fontSize: 12 }}>컴퓨터 예약</span>
+            <span style={{ fontSize: 10, opacity: 0.7, marginTop: 1 }}>9월 OPEN 예정</span>
+          </span>
+        </button>
+        <button
+          onClick={() => window.open('/cv/', '_blank')}
+          style={quickNavStyle('linear-gradient(135deg,#14532d,#16a34a)', 'none', '#fff')}
+        >
+          <span>📄</span>
+          <span style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+            <span style={{ fontWeight: 700, fontSize: 12 }}>CV 작성</span>
+            <span style={{ fontSize: 10, opacity: 0.75, marginTop: 1 }}>이력서 만들기</span>
+          </span>
+        </button>
+      </div>
+
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
         <div>
           <div style={{ fontSize: 12, color: '#888', marginBottom: 2 }}>명지대학교</div>
@@ -81,6 +132,14 @@ export default function App() {
           <span style={{ fontSize: 10, color: '#888', marginRight: 4 }}>
             {user.name} ({user.student_id})
           </span>
+          <button
+            onClick={() => setNoticeOpen(true)}
+            style={{
+              fontSize: 9, padding: '3px 8px', borderRadius: 4,
+              background: '#FFFBEB', border: '1px solid #F59E0B80',
+              color: '#B45309', cursor: 'pointer', fontWeight: 600,
+            }}
+          >📢 공지</button>
           {user.role === 'admin' && (
             <button
               onClick={() => setAdminOpen(true)}
@@ -102,6 +161,7 @@ export default function App() {
         </div>
       </div>
 
+      {noticeOpen && <NoticeModal onClose={() => setNoticeOpen(false)} />}
       <StepBar current={step + 1} total={6} />
 
       {pathNodes.length > 0 && (
@@ -126,4 +186,22 @@ export default function App() {
       <Page />
     </div>
   );
+}
+
+function quickNavStyle(background, border, color) {
+  return {
+    display: 'flex', alignItems: 'center', gap: 8,
+    padding: '10px 10px',
+    height: 56,
+    boxSizing: 'border-box',
+    borderRadius: 10,
+    border: border === 'none' ? 'none' : `1.5px solid ${border}`,
+    background,
+    color,
+    cursor: 'pointer',
+    textAlign: 'left',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+    minWidth: 0,
+    width: '100%',
+  };
 }

@@ -42,6 +42,13 @@ router.post('/login', (req, res) => {
   const ok = bcrypt.compareSync(password, row.password_hash);
   if (!ok) return res.status(401).json({ error: '학번 또는 비밀번호가 올바르지 않습니다.' });
 
+  // 관리자 계정은 로그인 시마다 role을 'admin'으로 보정
+  const adminIds = [process.env.ADMIN_ID, 'studadmin', 'chemistry'].filter(Boolean);
+  if (adminIds.includes(row.student_id) && row.role !== 'admin') {
+    db.prepare("UPDATE users SET role='admin' WHERE id=?").run(row.id);
+    row.role = 'admin';
+  }
+
   const user = { id: row.id, student_id: row.student_id, name: row.name, role: row.role };
   setSessionCookie(res, signToken(user));
   res.json({ user });
