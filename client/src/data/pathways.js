@@ -93,14 +93,13 @@ export const MICRO_DEGREES = [
     shortName: '에너지소재설계·분석',
     color: '#0369A1',
     bg: '#E0F2FE',
-    requiredCourseIds: ['cap1'],
-    electiveCourseIds: ['cap2', 'energy_mod', 'energy_chem', 'adv_sem', 'ec_ana'],
+    requiredCourseIds: ['energy_mod', 'cap1'],
     crossDeptRequired: [
-      { name: '나노계측론', dept: '융합에너지학과' },
       { name: '나노공정개론', dept: '융합에너지학과' },
+      { name: '나노계측론', dept: '융합에너지학과' },
     ],
-    completionRule: '소재캡스톤디자인1 필수 + 아래 과목 중 3과목 이수 (총 12학점)\n화학과: 소재캡스톤디자인2, 에너지소재모델링, 에너지화학, 첨단에너지소재세미나, 기기분석:전기분석\n융합에너지학과: 나노계측론, 나노공정개론',
-    allCourseIds: ['cap1', 'cap2', 'energy_mod', 'energy_chem', 'adv_sem', 'ec_ana'],
+    completionRule: '아래 4과목 전부 이수 시 수여\n화학과: 에너지소재모델링, 소재캡스톤디자인1\n융합에너지학과: 나노공정개론, 나노계측론',
+    allCourseIds: ['energy_mod', 'cap1'],
     desc: '',
   },
   {

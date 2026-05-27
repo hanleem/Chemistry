@@ -218,6 +218,7 @@ function MicroDegreeGuideModal({ onClose }) {
           background: '#fff', borderRadius: 14, width: '100%', maxWidth: 560,
           boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
           overflow: 'hidden',
+          marginBottom: 20,
         }}
       >
         {/* 헤더 */}
@@ -248,74 +249,123 @@ function MicroDegreeGuideModal({ onClose }) {
           {/* 마이크로디그리란? */}
           <div style={{ padding: '10px 13px', borderRadius: 8, background: '#F0F9FF', border: '1px solid #BAE6FD' }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#0369A1', marginBottom: 5 }}>📌 마이크로디그리란?</div>
-            <div style={{ fontSize: 11, color: '#374151', lineHeight: 1.8 }}>
-              특정 분야의 교과목을 집중 이수하면 학교에서 <strong>수료 인증서</strong>를 발급하는 제도입니다.
-              졸업장과 별개로 전문 역량을 공식 인증받을 수 있으며, 취업·대학원 진학 시 경쟁력이 됩니다.
+            <div style={{ fontSize: 11, color: '#374151', lineHeight: 1.85 }}>
+              특정 분야의 교과목을 집중 이수하면 학교에서 <strong>이수 인증서</strong>를 발급하는 제도입니다.
+              이수 과정명이 <strong>졸업증명서 및 성적증명서에 공식 표기</strong>되며, 취업·대학원 진학 시
+              전문 역량의 공식 인증 자료로 활용됩니다.
             </div>
           </div>
 
           {/* 개설 마이크로디그리 */}
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#333', marginBottom: 8 }}>🎓 개설 마이크로디그리 (2종)</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#333', marginBottom: 8 }}>🎓 화학나노학전공 개설 마이크로디그리 (2종)</div>
 
             {/* MD1 */}
             <div style={{ borderRadius: 8, border: '1.5px solid #0369A160', background: '#E0F2FE', padding: '10px 13px', marginBottom: 8 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                 <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, background: '#0369A1', color: '#fff', fontWeight: 700 }}>MD 1</span>
                 <span style={{ fontSize: 12, fontWeight: 700, color: '#0369A1' }}>에너지소재설계·분석</span>
               </div>
-              <div style={{ fontSize: 10, color: '#0C4A6E', lineHeight: 1.9 }}>
-                <div><strong>필수 1과목:</strong> 소재캡스톤디자인1</div>
-                <div><strong>선택 3과목 이수:</strong></div>
-                <div style={{ paddingLeft: 12, color: '#1E40AF', lineHeight: 2 }}>
-                  · 화학과: 소재캡스톤디자인2, 에너지소재모델링, 에너지화학,<br/>
-                  &nbsp;&nbsp;첨단에너지소재세미나, 기기분석:전기분석<br/>
-                  · 융합에너지학과: 나노계측론, 나노공정개론
-                </div>
-                <div style={{ marginTop: 4, fontWeight: 600 }}>→ 합계 <strong style={{ color: '#0369A1' }}>12학점 이상</strong> 이수 시 수여</div>
+              <div style={{ fontSize: 10, color: '#0C4A6E', marginBottom: 6 }}>
+                <strong>아래 4과목 전부 이수 시 수여</strong>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {[
+                  { name: '에너지소재모델링', dept: '화학나노학전공', credit: 3 },
+                  { name: '소재캡스톤디자인1', dept: '화학나노학전공', credit: 3 },
+                  { name: '나노공정개론', dept: '융합에너지학과', credit: 3 },
+                  { name: '나노계측론', dept: '융합에너지학과', credit: 3 },
+                ].map((c, i) => (
+                  <div key={i} style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '5px 8px', borderRadius: 5, background: '#fff',
+                    border: '0.5px solid #0369A130',
+                    fontSize: 10, color: '#0C4A6E',
+                  }}>
+                    <span style={{ fontWeight: 700, color: '#0369A1', flexShrink: 0 }}>✓</span>
+                    <span style={{ flex: 1, fontWeight: 500 }}>{c.name}</span>
+                    <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: c.dept === '융합에너지학과' ? '#FEF3C7' : '#E0F2FE', color: c.dept === '융합에너지학과' ? '#B45309' : '#0369A1', flexShrink: 0 }}>{c.dept}</span>
+                    <span style={{ fontSize: 9, color: '#6B7280', flexShrink: 0 }}>{c.credit}학점</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 7, fontSize: 10, color: '#0369A1', fontWeight: 700 }}>
+                → 합계 12학점 전부 이수 시 수여
               </div>
             </div>
 
             {/* MD2 */}
             <div style={{ borderRadius: 8, border: '1.5px solid #B4530960', background: '#FEF3C7', padding: '10px 13px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
                 <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, background: '#B45309', color: '#fff', fontWeight: 700 }}>MD 2</span>
                 <span style={{ fontSize: 12, fontWeight: 700, color: '#B45309' }}>에너지화학·나노융합</span>
               </div>
-              <div style={{ fontSize: 10, color: '#78350F', lineHeight: 1.9 }}>
-                <div><strong>필수 4과목 전부 이수:</strong></div>
-                <div style={{ paddingLeft: 12, color: '#92400E', lineHeight: 2 }}>
-                  · 에너지소재모델링<br/>
-                  · 기기분석:전기분석<br/>
-                  · 기능성나노소재<br/>
-                  · 에너지화학
-                </div>
-                <div style={{ marginTop: 4, fontWeight: 600 }}>→ 위 4과목 <strong style={{ color: '#B45309' }}>전부 이수</strong> 시 수여</div>
+              <div style={{ fontSize: 10, color: '#78350F', marginBottom: 6 }}>
+                <strong>아래 4과목 전부 이수 시 수여</strong>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {[
+                  { name: '에너지소재모델링', credit: 3 },
+                  { name: '기기분석:전기분석', credit: 3 },
+                  { name: '기능성나노소재', credit: 3 },
+                  { name: '에너지화학', credit: 3 },
+                ].map((c, i) => (
+                  <div key={i} style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '5px 8px', borderRadius: 5, background: '#fff',
+                    border: '0.5px solid #B4530930',
+                    fontSize: 10, color: '#78350F',
+                  }}>
+                    <span style={{ fontWeight: 700, color: '#B45309', flexShrink: 0 }}>✓</span>
+                    <span style={{ flex: 1, fontWeight: 500 }}>{c.name}</span>
+                    <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: '#FEF3C7', color: '#B45309', flexShrink: 0 }}>화학나노학전공</span>
+                    <span style={{ fontSize: 9, color: '#6B7280', flexShrink: 0 }}>{c.credit}학점</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 7, fontSize: 10, color: '#B45309', fontWeight: 700 }}>
+                → 합계 12학점 전부 이수 시 수여
               </div>
             </div>
           </div>
 
-          {/* 신청 방법 */}
+          {/* 신청 방법 — PDF 기반 정확한 내용 */}
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#333', marginBottom: 8 }}>📋 신청 방법 및 절차</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#333', marginBottom: 8 }}>📋 신청 및 이수증 발급 방법</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {[
-                { step: '01', title: '신청 시기', desc: '매 학기 초 수강신청 기간 전후 — 학사공지 확인' },
-                { step: '02', title: '신청 방법', desc: '명지대 포털(MJ-portal) → 학생서비스 → 마이크로디그리 신청' },
-                { step: '03', title: '이수 관리', desc: '신청 후 해당 교과목 수강 — 학기별 이수 현황 자동 반영' },
-                { step: '04', title: '수료 확인', desc: '졸업 전 이수 요건 충족 시 수료 인증서 발급 신청' },
-              ].map(({ step, title, desc }) => (
+                {
+                  step: '①',
+                  title: '신청',
+                  desc: '해당 교과목을 수강하는 것으로 신청을 갈음합니다. 별도 신청 절차 없음.',
+                  color: '#0369A1',
+                },
+                {
+                  step: '②',
+                  title: '이수증 발급',
+                  desc: '학생정보시스템(MSI) → 학사행정 → 성적 → 마이크로디그리 조회에서 직접 신청 (4학년부터 가능)',
+                  color: '#0369A1',
+                },
+                {
+                  step: '※',
+                  title: '자동 이수 처리',
+                  desc: '이수 기준 충족 학생이 졸업 시까지 미신청 시, 졸업일 기준으로 자동 이수 처리됩니다. (2026.1.1.부터)',
+                  color: '#6B7280',
+                },
+              ].map(({ step, title, desc, color }) => (
                 <div key={step} style={{
                   display: 'flex', gap: 10, alignItems: 'flex-start',
-                  padding: '8px 12px', borderRadius: 7, background: '#F9FAFB', border: '0.5px solid #E5E7EB',
+                  padding: '8px 12px', borderRadius: 7,
+                  background: step === '※' ? '#F9FAFB' : '#F0F9FF',
+                  border: `0.5px solid ${step === '※' ? '#E5E7EB' : '#BAE6FD'}`,
                 }}>
                   <span style={{
-                    fontSize: 9, fontWeight: 800, color: '#fff',
-                    background: '#0369A1', borderRadius: 4, padding: '2px 6px', flexShrink: 0, marginTop: 1,
+                    fontSize: 11, fontWeight: 800, color,
+                    flexShrink: 0, marginTop: 1, minWidth: 16,
                   }}>{step}</span>
                   <div>
                     <div style={{ fontSize: 11, fontWeight: 600, color: '#1F2937', marginBottom: 2 }}>{title}</div>
-                    <div style={{ fontSize: 10, color: '#6B7280', lineHeight: 1.6 }}>{desc}</div>
+                    <div style={{ fontSize: 10, color: '#6B7280', lineHeight: 1.7 }}>{desc}</div>
                   </div>
                 </div>
               ))}
@@ -325,12 +375,12 @@ function MicroDegreeGuideModal({ onClose }) {
           {/* 혜택 */}
           <div style={{ padding: '10px 13px', borderRadius: 8, background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#0F6E56', marginBottom: 6 }}>✅ 이수 혜택</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
               {[
-                '마이크로디그리 수료 인증서 발급 (졸업 시)',
+                '이수 인증서 별도 발급',
+                '졸업증명서 및 성적증명서에 이수 과정명 공식 표기',
                 '전문 역량 공식 인증 → 취업·대학원 자기소개서 활용',
                 '연계 융합전공 공동이수 시 추가 학위 취득 가능',
-                '로드맵 앱에서 이수 과목 선택 시 자동 달성 여부 표시',
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', gap: 6, fontSize: 10, color: '#065F46', lineHeight: 1.6 }}>
                   <span style={{ color: '#0F6E56', fontWeight: 700, flexShrink: 0 }}>·</span>
