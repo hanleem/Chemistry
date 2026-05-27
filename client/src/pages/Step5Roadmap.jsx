@@ -199,6 +199,157 @@ function CreditBadge({ courses, showDim }) {
   );
 }
 
+// ── 마이크로디그리 신청방법 모달 ─────────────────────────────────────────
+function MicroDegreeGuideModal({ onClose }) {
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: 'rgba(0,0,0,0.45)',
+        display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+        padding: '20px 12px',
+        overflowY: 'auto',
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: '#fff', borderRadius: 14, width: '100%', maxWidth: 560,
+          boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
+          overflow: 'hidden',
+        }}
+      >
+        {/* 헤더 */}
+        <div style={{
+          background: 'linear-gradient(135deg,#0369A1,#0284C7)',
+          padding: '16px 18px',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+        }}>
+          <div>
+            <div style={{ fontSize: 9, color: '#BAE6FD', fontWeight: 600, letterSpacing: 1, marginBottom: 3 }}>
+              명지대학교 화학나노학전공
+            </div>
+            <div style={{ fontSize: 16, fontWeight: 800, color: '#fff', lineHeight: 1.3 }}>
+              마이크로디그리 신청 안내
+            </div>
+            <div style={{ fontSize: 10, color: '#BAE6FD', marginTop: 3 }}>
+              Micro-Degree Program
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: 18, padding: '0 0 0 10px', opacity: .8 }}
+          >✕</button>
+        </div>
+
+        <div style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+          {/* 마이크로디그리란? */}
+          <div style={{ padding: '10px 13px', borderRadius: 8, background: '#F0F9FF', border: '1px solid #BAE6FD' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#0369A1', marginBottom: 5 }}>📌 마이크로디그리란?</div>
+            <div style={{ fontSize: 11, color: '#374151', lineHeight: 1.8 }}>
+              특정 분야의 교과목을 집중 이수하면 학교에서 <strong>수료 인증서</strong>를 발급하는 제도입니다.
+              졸업장과 별개로 전문 역량을 공식 인증받을 수 있으며, 취업·대학원 진학 시 경쟁력이 됩니다.
+            </div>
+          </div>
+
+          {/* 개설 마이크로디그리 */}
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#333', marginBottom: 8 }}>🎓 개설 마이크로디그리 (2종)</div>
+
+            {/* MD1 */}
+            <div style={{ borderRadius: 8, border: '1.5px solid #0369A160', background: '#E0F2FE', padding: '10px 13px', marginBottom: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, background: '#0369A1', color: '#fff', fontWeight: 700 }}>MD 1</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#0369A1' }}>에너지소재설계·분석</span>
+              </div>
+              <div style={{ fontSize: 10, color: '#0C4A6E', lineHeight: 1.9 }}>
+                <div><strong>필수 1과목:</strong> 소재캡스톤디자인1</div>
+                <div><strong>선택 3과목 이수:</strong></div>
+                <div style={{ paddingLeft: 12, color: '#1E40AF', lineHeight: 2 }}>
+                  · 화학과: 소재캡스톤디자인2, 에너지소재모델링, 에너지화학,<br/>
+                  &nbsp;&nbsp;첨단에너지소재세미나, 기기분석:전기분석<br/>
+                  · 융합에너지학과: 나노계측론, 나노공정개론
+                </div>
+                <div style={{ marginTop: 4, fontWeight: 600 }}>→ 합계 <strong style={{ color: '#0369A1' }}>12학점 이상</strong> 이수 시 수여</div>
+              </div>
+            </div>
+
+            {/* MD2 */}
+            <div style={{ borderRadius: 8, border: '1.5px solid #B4530960', background: '#FEF3C7', padding: '10px 13px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, background: '#B45309', color: '#fff', fontWeight: 700 }}>MD 2</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#B45309' }}>에너지화학·나노융합</span>
+              </div>
+              <div style={{ fontSize: 10, color: '#78350F', lineHeight: 1.9 }}>
+                <div><strong>필수 4과목 전부 이수:</strong></div>
+                <div style={{ paddingLeft: 12, color: '#92400E', lineHeight: 2 }}>
+                  · 에너지소재모델링<br/>
+                  · 기기분석:전기분석<br/>
+                  · 기능성나노소재<br/>
+                  · 에너지화학
+                </div>
+                <div style={{ marginTop: 4, fontWeight: 600 }}>→ 위 4과목 <strong style={{ color: '#B45309' }}>전부 이수</strong> 시 수여</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 신청 방법 */}
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#333', marginBottom: 8 }}>📋 신청 방법 및 절차</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {[
+                { step: '01', title: '신청 시기', desc: '매 학기 초 수강신청 기간 전후 — 학사공지 확인' },
+                { step: '02', title: '신청 방법', desc: '명지대 포털(MJ-portal) → 학생서비스 → 마이크로디그리 신청' },
+                { step: '03', title: '이수 관리', desc: '신청 후 해당 교과목 수강 — 학기별 이수 현황 자동 반영' },
+                { step: '04', title: '수료 확인', desc: '졸업 전 이수 요건 충족 시 수료 인증서 발급 신청' },
+              ].map(({ step, title, desc }) => (
+                <div key={step} style={{
+                  display: 'flex', gap: 10, alignItems: 'flex-start',
+                  padding: '8px 12px', borderRadius: 7, background: '#F9FAFB', border: '0.5px solid #E5E7EB',
+                }}>
+                  <span style={{
+                    fontSize: 9, fontWeight: 800, color: '#fff',
+                    background: '#0369A1', borderRadius: 4, padding: '2px 6px', flexShrink: 0, marginTop: 1,
+                  }}>{step}</span>
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: '#1F2937', marginBottom: 2 }}>{title}</div>
+                    <div style={{ fontSize: 10, color: '#6B7280', lineHeight: 1.6 }}>{desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 혜택 */}
+          <div style={{ padding: '10px 13px', borderRadius: 8, background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#0F6E56', marginBottom: 6 }}>✅ 이수 혜택</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {[
+                '마이크로디그리 수료 인증서 발급 (졸업 시)',
+                '전문 역량 공식 인증 → 취업·대학원 자기소개서 활용',
+                '연계 융합전공 공동이수 시 추가 학위 취득 가능',
+                '로드맵 앱에서 이수 과목 선택 시 자동 달성 여부 표시',
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'flex', gap: 6, fontSize: 10, color: '#065F46', lineHeight: 1.6 }}>
+                  <span style={{ color: '#0F6E56', fontWeight: 700, flexShrink: 0 }}>·</span>
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 문의 */}
+          <div style={{ fontSize: 10, color: '#9CA3AF', textAlign: 'center', paddingTop: 4, borderTop: '0.5px solid #E5E7EB' }}>
+            문의: 화학나노학전공 학과 사무실 · 담당 교수님
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Step5Roadmap() {
   const {
     result, setStep, reset,
@@ -208,6 +359,7 @@ export default function Step5Roadmap() {
   } = useSelectionStore();
   const [activeCourse, setActiveCourse] = useState(null);
   const [showDim, setShowDim] = useState(false);
+  const [microGuideOpen, setMicroGuideOpen] = useState(false);
 
   if (!result) {
     return (
@@ -258,8 +410,26 @@ export default function Step5Roadmap() {
 
   return (
     <div>
-      <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>
-        맞춤 이수 로드맵
+      {microGuideOpen && <MicroDegreeGuideModal onClose={() => setMicroGuideOpen(false)} />}
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+        <div style={{ fontSize: 14, fontWeight: 700 }}>
+          맞춤 이수 로드맵
+        </div>
+        <button
+          onClick={() => setMicroGuideOpen(true)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 5,
+            padding: '6px 12px', borderRadius: 7,
+            background: 'linear-gradient(135deg,#0369A1,#0284C7)',
+            color: '#fff', border: 'none', cursor: 'pointer',
+            fontSize: 11, fontWeight: 700,
+            boxShadow: '0 2px 8px rgba(3,105,161,0.35)',
+          }}
+        >
+          <span>🎓</span>
+          마이크로디그리 신청방법
+        </button>
       </div>
 
       {/* 진로 방향 배너 */}
