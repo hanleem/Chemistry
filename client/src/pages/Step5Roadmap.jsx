@@ -204,8 +204,8 @@ const CERT_DATA = [
   {
     group: '화학분석', color: '#7C3AED',
     items: [
-      { name: '화학분析기사', type: '국가기술자격증', org: '산업통상자원부·한국산업인력공단', desc: '분析화학 및 기기분析분야 전문지식과 기술을 갖춰 인재를 양성하기 위한 자격제도' },
-      { name: '화학분析기능사', type: '국가기술자격증', org: '산업통상자원부·한국산업인력공단', desc: '실험·검사 부문에서 약품·기기·기구를 사용하여 물질의 성분 종류·조성비를 분析하는 업무 수행' },
+      { name: '화학분석기사', type: '국가기술자격증', org: '산업통상자원부·한국산업인력공단', desc: '분석화학 및 기기분석분야 전문지식과 기술을 갖춰 인재를 양성하기 위한 자격제도' },
+      { name: '화학분석기능사', type: '국가기술자격증', org: '산업통상자원부·한국산업인력공단', desc: '실험·검사 부문에서 약품·기기·기구를 사용하여 물질의 성분 종류·조성비를 분석하는 업무 수행' },
       { name: '정밀화학기사', type: '국가기술자격증', org: '고용노동부·한국산업인력공단', desc: '정밀화학제품 관련 제품설계·반응·혼합·분리정제·제형화 공정을 통해 기능성 화학 제품 개발 및 생산관리' },
     ],
   },
@@ -230,12 +230,12 @@ const CERT_DATA = [
   {
     group: '환경-대기·수질', color: '#0F6E56',
     items: [
-      { name: '대기환경기사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '대기오염 측정·연구·실험분析을 통해 대책 강구, 오염방지시설 설계·시공·운영 업무 수행' },
+      { name: '대기환경기사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '대기오염 측정·연구·실험분석을 통해 대책 강구, 오염방지시설 설계·시공·운영 업무 수행' },
       { name: '대기환경산업기사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '대기오염 측정 및 대기 오염물질 제거를 위한 오염방지시설 설계·시공·운영 업무 수행' },
-      { name: '대기관리기술사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '대기관리 분야 고도의 전문지식과 실무경험 기반 계획·연구·설계·분析·평가 기술업무 수행' },
-      { name: '수질환경기사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '수질오염 측정·연구·실험분析을 통해 대책 강구, 오염방지시설 설계·시공·운영 업무 수행' },
+      { name: '대기관리기술사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '대기관리 분야 고도의 전문지식과 실무경험 기반 계획·연구·설계·분석·평가 기술업무 수행' },
+      { name: '수질환경기사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '수질오염 측정·연구·실험분석을 통해 대책 강구, 오염방지시설 설계·시공·운영 업무 수행' },
       { name: '수질환경산업기사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '수질오염 측정 및 오염물질 제거를 위한 오염방지시설 설계·시공·운영 업무 수행' },
-      { name: '수질관리기술사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '수질 분야 고도의 전문지식과 실무경험 기반 계획·연구·설계·분析·평가 기술업무 수행' },
+      { name: '수질관리기술사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '수질 분야 고도의 전문지식과 실무경험 기반 계획·연구·설계·분석·평가 기술업무 수행' },
     ],
   },
   {
@@ -527,7 +527,7 @@ function MicroDegreeGuideModal({ onClose, onOpenCert }) {
             <div style={{ borderRadius: 8, border: '1.5px solid #7C3AED60', background: '#F3EFFE', padding: '10px 13px', marginTop: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, background: '#7C3AED', color: '#fff', fontWeight: 700 }}>MD 4</span>
-                <span style={{ fontSize: 12, fontWeight: 700, color: '#7C3AED' }}>화학분析 전문자격</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#7C3AED' }}>화학분석 전문자격</span>
                 <button
                   onClick={onOpenCert}
                   style={{
@@ -542,9 +542,9 @@ function MicroDegreeGuideModal({ onClose, onOpenCert }) {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {[
-                  { name: '분析화학2', credit: 3 },
-                  { name: '기기분析:전기분析', credit: 3 },
-                  { name: '기기분析:분광학', credit: 3 },
+                  { name: '분석화학2', credit: 3 },
+                  { name: '기기분석:전기분석', credit: 3 },
+                  { name: '기기분석:분광학', credit: 3 },
                   { name: '무기물및소재합성론', credit: 3 },
                   { name: '무기화학실험1', credit: 2 },
                 ].map((c, i) => (
