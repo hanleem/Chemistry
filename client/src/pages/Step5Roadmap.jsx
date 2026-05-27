@@ -706,20 +706,36 @@ export default function Step5Roadmap() {
         <div style={{ fontSize: 14, fontWeight: 700 }}>
           맞춤 이수 로드맵
         </div>
-        <button
-          onClick={() => setMicroGuideOpen(true)}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 5,
-            padding: '6px 12px', borderRadius: 7,
-            background: 'linear-gradient(135deg,#0369A1,#0284C7)',
-            color: '#fff', border: 'none', cursor: 'pointer',
-            fontSize: 11, fontWeight: 700,
-            boxShadow: '0 2px 8px rgba(3,105,161,0.35)',
-          }}
-        >
-          <span>🎓</span>
-          마이크로디그리 신청방법
-        </button>
+        <div style={{ display: 'flex', gap: 6 }}>
+          <button
+            onClick={() => setMicroGuideOpen(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              padding: '6px 12px', borderRadius: 7,
+              background: 'linear-gradient(135deg,#0369A1,#0284C7)',
+              color: '#fff', border: 'none', cursor: 'pointer',
+              fontSize: 11, fontWeight: 700,
+              boxShadow: '0 2px 8px rgba(3,105,161,0.35)',
+            }}
+          >
+            <span>🎓</span>
+            마이크로디그리 신청방법
+          </button>
+          <button
+            onClick={() => setCertOpen(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              padding: '6px 12px', borderRadius: 7,
+              background: 'linear-gradient(135deg,#7C3AED,#6D28D9)',
+              color: '#fff', border: 'none', cursor: 'pointer',
+              fontSize: 11, fontWeight: 700,
+              boxShadow: '0 2px 8px rgba(124,58,237,0.35)',
+            }}
+          >
+            <span>📋</span>
+            자격증 정보
+          </button>
+        </div>
       </div>
 
       {/* 진로 방향 배너 */}
