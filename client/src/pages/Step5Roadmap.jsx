@@ -258,7 +258,7 @@ function MicroDegreeGuideModal({ onClose }) {
 
           {/* 개설 마이크로디그리 */}
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#333', marginBottom: 8 }}>🎓 화학나노학전공 개설 마이크로디그리 (2종)</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#333', marginBottom: 8 }}>🎓 화학나노학전공 개설 마이크로디그리 (3종)</div>
 
             {/* MD1 */}
             <div style={{ borderRadius: 8, border: '1.5px solid #0369A160', background: '#E0F2FE', padding: '10px 13px', marginBottom: 8 }}>
@@ -325,6 +325,41 @@ function MicroDegreeGuideModal({ onClose }) {
               </div>
               <div style={{ marginTop: 7, fontSize: 10, color: '#B45309', fontWeight: 700 }}>
                 → 합계 12학점 전부 이수 시 수여
+              </div>
+            </div>
+
+            {/* MD3 */}
+            <div style={{ borderRadius: 8, border: '1.5px solid #0F6E5660', background: '#E1F5EE', padding: '10px 13px', marginTop: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, background: '#0F6E56', color: '#fff', fontWeight: 700 }}>MD 3</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#0F6E56' }}>첨단에너지소재엔지니어</span>
+              </div>
+              <div style={{ fontSize: 10, color: '#064E3B', marginBottom: 6 }}>
+                <strong>아래 5과목 전부 이수 시 수여</strong>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {[
+                  { name: '에너지소재모델링', credit: 3 },
+                  { name: '에너지화학', credit: 3 },
+                  { name: '첨단에너지소재세미나', credit: 3 },
+                  { name: '소재캡스톤디자인1', credit: 3 },
+                  { name: '소재캡스톤디자인2', credit: 3 },
+                ].map((c, i) => (
+                  <div key={i} style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '5px 8px', borderRadius: 5, background: '#fff',
+                    border: '0.5px solid #0F6E5630',
+                    fontSize: 10, color: '#064E3B',
+                  }}>
+                    <span style={{ fontWeight: 700, color: '#0F6E56', flexShrink: 0 }}>✓</span>
+                    <span style={{ flex: 1, fontWeight: 500 }}>{c.name}</span>
+                    <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: '#E1F5EE', color: '#0F6E56', flexShrink: 0 }}>화학나노학전공</span>
+                    <span style={{ fontSize: 9, color: '#6B7280', flexShrink: 0 }}>{c.credit}학점</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 7, fontSize: 10, color: '#0F6E56', fontWeight: 700 }}>
+                → 합계 15학점 전부 이수 시 수여
               </div>
             </div>
           </div>

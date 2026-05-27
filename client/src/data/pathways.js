@@ -108,11 +108,21 @@ export const MICRO_DEGREES = [
     shortName: '에너지화학·나노융합',
     color: '#B45309',
     bg: '#FEF3C7',
-    // 수료 요건: 4과목 모두 이수
     requiredCourseIds: ['energy_mod', 'ec_ana', 'nano_mat', 'energy_chem'],
     allCourseIds: ['energy_mod', 'ec_ana', 'nano_mat', 'energy_chem'],
     completionRule: '에너지소재모델링 · 기기분석:전기분석 · 기능성나노소재 · 에너지화학 4과목 이수 시 수여',
     desc: '에너지화학 및 나노 융합 4과목 이수 시 수여',
+  },
+  {
+    id: 'mds_adv_energy',
+    name: '첨단에너지소재엔지니어 마이크로디그리',
+    shortName: '첨단에너지소재엔지니어',
+    color: '#0F6E56',
+    bg: '#E1F5EE',
+    requiredCourseIds: ['energy_mod', 'energy_chem', 'adv_sem', 'cap1', 'cap2'],
+    allCourseIds: ['energy_mod', 'energy_chem', 'adv_sem', 'cap1', 'cap2'],
+    completionRule: '에너지소재모델링 · 에너지화학 · 첨단에너지소재세미나 · 소재캡스톤디자인1 · 소재캡스톤디자인2 5과목 이수 시 수여',
+    desc: '첨단 에너지소재 분야 5과목 전부 이수 시 수여',
   },
 ];
 
