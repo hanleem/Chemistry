@@ -199,8 +199,168 @@ function CreditBadge({ courses, showDim }) {
   );
 }
 
+// ── 화학과 관련 자격증 정보 모달 ─────────────────────────────────────────
+const CERT_DATA = [
+  {
+    group: '화학분석', color: '#7C3AED',
+    items: [
+      { name: '화학분析기사', type: '국가기술자격증', org: '산업통상자원부·한국산업인력공단', desc: '분析화학 및 기기분析분야 전문지식과 기술을 갖춰 인재를 양성하기 위한 자격제도' },
+      { name: '화학분析기능사', type: '국가기술자격증', org: '산업통상자원부·한국산업인력공단', desc: '실험·검사 부문에서 약품·기기·기구를 사용하여 물질의 성분 종류·조성비를 분析하는 업무 수행' },
+      { name: '정밀화학기사', type: '국가기술자격증', org: '고용노동부·한국산업인력공단', desc: '정밀화학제품 관련 제품설계·반응·혼합·분리정제·제형화 공정을 통해 기능성 화학 제품 개발 및 생산관리' },
+    ],
+  },
+  {
+    group: '위험물·화공', color: '#B45309',
+    items: [
+      { name: '위험물기능사', type: '국가기술자격증', org: '소방청·한국산업인력공단', desc: '위험물 안전관리법에 의거 취급소에서 위험물·시설물 점검 및 재해 발생 시 응급조치·안전관리 업무 수행' },
+      { name: '위험물산업기사', type: '국가기술자격증', org: '소방청·한국산업인력공단', desc: '위험물의 저장·제조·취급조에서 안전 취급 및 일반작업자 지시·감독, 안전점검 및 응급조치 업무 수행' },
+      { name: '위험물기능장', type: '국가기술자격증', org: '소방청·한국산업인력공단', desc: '위험물 관련 최고 수준의 숙련기능 보유자로, 위험물 안전관리 총괄·지도·감독 업무 수행' },
+      { name: '화공기사', type: '국가기술자격증', org: '고용노동부·한국산업인력공단', desc: '화학공정 전반의 계측·제어·관리·감독 및 화학장치(분리기·여과기·반응기 등) 운영 업무 수행' },
+      { name: '화공기술사', type: '국가기술자격증', org: '과학기술정보통신부·한국산업인력공단', desc: '화학공학 분야 최고 수준의 전문가 자격 (2006년부터 화공기술사로 통합 시행)' },
+    ],
+  },
+  {
+    group: '바이오·농화학', color: '#0369A1',
+    items: [
+      { name: '바이오화학제품제조기사', type: '국가기술자격증', org: '산업통상자원부·한국산업인력공단', desc: '생물체 기능을 이용한 배양·분리·정제·전환·중합 공정으로 바이오화학소재·특수제품 제조 및 품질관리' },
+      { name: '바이오화학제품제조산업기사', type: '국가기술자격증', org: '산업통상자원부·한국산업인력공단', desc: '균주보관·배지조제·멸균·배양·정제 공정으로 범용 바이오화학소재·특수바이오화학제품 제조 업무' },
+      { name: '농화학기술사', type: '국가기술자격증', org: '농촌진흥청·한국산업인력공단', desc: '농업 생산에서 화학적 요소(작물 보호·비료·병해 관리)를 다루는 전문가' },
+    ],
+  },
+  {
+    group: '환경-대기·수질', color: '#0F6E56',
+    items: [
+      { name: '대기환경기사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '대기오염 측정·연구·실험분析을 통해 대책 강구, 오염방지시설 설계·시공·운영 업무 수행' },
+      { name: '대기환경산업기사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '대기오염 측정 및 대기 오염물질 제거를 위한 오염방지시설 설계·시공·운영 업무 수행' },
+      { name: '대기관리기술사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '대기관리 분야 고도의 전문지식과 실무경험 기반 계획·연구·설계·분析·평가 기술업무 수행' },
+      { name: '수질환경기사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '수질오염 측정·연구·실험분析을 통해 대책 강구, 오염방지시설 설계·시공·운영 업무 수행' },
+      { name: '수질환경산업기사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '수질오염 측정 및 오염물질 제거를 위한 오염방지시설 설계·시공·운영 업무 수행' },
+      { name: '수질관리기술사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '수질 분야 고도의 전문지식과 실무경험 기반 계획·연구·설계·분析·평가 기술업무 수행' },
+    ],
+  },
+  {
+    group: '산업안전·폐기물', color: '#6B7280',
+    items: [
+      { name: '산업안전기사', type: '국가기술자격증', org: '고용노동부·한국산업인력공단', desc: '산업현장의 재해를 예방하기 위한 안전 계획 수립·검토·위험성 평가 및 안전교육·지도 업무 수행' },
+      { name: '폐기물처리기사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '일반·산업 폐기물을 기계적·생물학적·화학적 반응조작으로 감량화·무해화·안전화 처리 업무 담당' },
+      { name: '폐기물처리산업기사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '폐기물 분리·증발·여과·소각 등 단위조작과 화학적 반응조작을 통한 폐기물 처리 업무 담당' },
+      { name: '폐기물처리기술사', type: '국가기술자격증', org: '환경부·한국산업인력공단', desc: '환경 분야 최고 전문지식과 실무경험 기반 폐기물 관련 계획·설계·운영 기술업무 수행' },
+    ],
+  },
+  {
+    group: '화약류', color: '#991B1B',
+    items: [
+      { name: '화약류제조기사', type: '국가기술자격증', org: '경찰청·한국산업인력공단', desc: '화약·폭약·화공품 제조 관련 시설·제조방법·안전교육·점검 지도·감독 업무 수행' },
+      { name: '화약류제조산업기사', type: '국가기술자격증', org: '경찰청·한국산업인력공단', desc: '화약류 제조 상급 숙련기능 보유자로 제품 제조 및 기술점검·안전교육·보안책임 업무 수행' },
+    ],
+  },
+];
+
+function CertInfoModal({ onClose }) {
+  const [activeGroup, setActiveGroup] = useState(null);
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 10000,
+        background: 'rgba(0,0,0,0.55)',
+        display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+        padding: '20px 12px', overflowY: 'auto',
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: '#fff', borderRadius: 14, width: '100%', maxWidth: 580,
+          boxShadow: '0 8px 40px rgba(0,0,0,0.22)', overflow: 'hidden', marginBottom: 20,
+        }}
+      >
+        {/* 헤더 */}
+        <div style={{ background: 'linear-gradient(135deg,#7C3AED,#6D28D9)', padding: '14px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: 9, color: '#DDD6FE', fontWeight: 600, letterSpacing: 1, marginBottom: 2 }}>화학나노학전공</div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: '#fff' }}>화학과 관련 자격증 안내</div>
+          </div>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#fff', fontSize: 18, cursor: 'pointer', opacity: .8 }}>✕</button>
+        </div>
+
+        <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {/* 안내 문구 */}
+          <div style={{ padding: '9px 12px', borderRadius: 8, background: '#F5F3FF', border: '1px solid #DDD6FE', fontSize: 11, color: '#5B21B6', lineHeight: 1.8 }}>
+            화학나노학전공 졸업생이 취득할 수 있는 주요 국가기술자격증입니다.<br />
+            자격증 종류가 매우 다양하므로 본인의 진로 방향에 맞는 자격증을 전략적으로 선택하세요.<br />
+            <span style={{ fontWeight: 700 }}>자세한 응시자격·시험정보는 <a href="https://www.q-net.or.kr" target="_blank" rel="noreferrer" style={{ color: '#7C3AED' }}>Q-net(큐넷)</a>에서 확인하세요.</span>
+          </div>
+
+          {/* 그룹 탭 */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+            {CERT_DATA.map(g => (
+              <button
+                key={g.group}
+                onClick={() => setActiveGroup(activeGroup === g.group ? null : g.group)}
+                style={{
+                  fontSize: 10, padding: '3px 10px', borderRadius: 12,
+                  border: `1.5px solid ${g.color}`,
+                  background: activeGroup === g.group ? g.color : '#fff',
+                  color: activeGroup === g.group ? '#fff' : g.color,
+                  cursor: 'pointer', fontWeight: 600, transition: 'all .12s',
+                }}
+              >{g.group} ({g.items.length})</button>
+            ))}
+            {activeGroup && (
+              <button
+                onClick={() => setActiveGroup(null)}
+                style={{ fontSize: 10, padding: '3px 10px', borderRadius: 12, border: '1px solid #ccc', background: '#f9f9f9', color: '#888', cursor: 'pointer' }}
+              >전체 닫기</button>
+            )}
+          </div>
+
+          {/* 테이블 */}
+          {CERT_DATA.filter(g => !activeGroup || g.group === activeGroup).map(g => (
+            <div key={g.group}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: g.color, marginBottom: 5, paddingLeft: 2, display: 'flex', alignItems: 'center', gap: 5 }}>
+                <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: 2, background: g.color }}></span>
+                {g.group}
+              </div>
+              <div style={{ borderRadius: 8, border: `1px solid ${g.color}30`, overflow: 'hidden' }}>
+                {/* 헤더 */}
+                <div style={{ display: 'grid', gridTemplateColumns: '110px 1fr', background: g.color + '18', borderBottom: `1px solid ${g.color}25` }}>
+                  <div style={{ padding: '5px 8px', fontSize: 9, fontWeight: 700, color: g.color }}>자격증명</div>
+                  <div style={{ padding: '5px 8px', fontSize: 9, fontWeight: 700, color: g.color, borderLeft: `1px solid ${g.color}20` }}>주요 직무 내용</div>
+                </div>
+                {g.items.map((item, i) => (
+                  <div
+                    key={item.name}
+                    style={{
+                      display: 'grid', gridTemplateColumns: '110px 1fr',
+                      borderBottom: i < g.items.length - 1 ? `0.5px solid ${g.color}20` : 'none',
+                      background: i % 2 === 0 ? '#fff' : g.color + '06',
+                    }}
+                  >
+                    <div style={{ padding: '6px 8px', fontSize: 10, fontWeight: 600, color: g.color, lineHeight: 1.4 }}>
+                      {item.name}
+                      <div style={{ fontSize: 8, color: '#9CA3AF', fontWeight: 400, marginTop: 1 }}>{item.org}</div>
+                    </div>
+                    <div style={{ padding: '6px 8px', fontSize: 10, color: '#374151', lineHeight: 1.6, borderLeft: `0.5px solid ${g.color}20` }}>
+                      {item.desc}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          <div style={{ fontSize: 10, color: '#9CA3AF', textAlign: 'center', paddingTop: 4, borderTop: '0.5px solid #E5E7EB' }}>
+            출처: 한국산업인력공단 Q-net · 각 자격증 시행기관 공고 기준
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── 마이크로디그리 신청방법 모달 ─────────────────────────────────────────
-function MicroDegreeGuideModal({ onClose }) {
+function MicroDegreeGuideModal({ onClose, onOpenCert }) {
   return (
     <div
       onClick={onClose}
@@ -258,7 +418,7 @@ function MicroDegreeGuideModal({ onClose }) {
 
           {/* 개설 마이크로디그리 */}
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#333', marginBottom: 8 }}>🎓 화학나노학전공 개설 마이크로디그리 (3종)</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#333', marginBottom: 8 }}>🎓 화학나노학전공 개설 마이크로디그리 (4종)</div>
 
             {/* MD1 */}
             <div style={{ borderRadius: 8, border: '1.5px solid #0369A160', background: '#E0F2FE', padding: '10px 13px', marginBottom: 8 }}>
@@ -335,13 +495,13 @@ function MicroDegreeGuideModal({ onClose }) {
                 <span style={{ fontSize: 12, fontWeight: 700, color: '#0F6E56' }}>첨단에너지소재엔지니어</span>
               </div>
               <div style={{ fontSize: 10, color: '#064E3B', marginBottom: 6 }}>
-                <strong>아래 5과목 전부 이수 시 수여</strong>
+                <strong>아래 5과목(총 14학점) 중 12학점 이상 취득 시 수여</strong>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {[
                   { name: '에너지소재모델링', credit: 3 },
                   { name: '에너지화학', credit: 3 },
-                  { name: '첨단에너지소재세미나', credit: 3 },
+                  { name: '첨단에너지소재세미나', credit: 2 },
                   { name: '소재캡스톤디자인1', credit: 3 },
                   { name: '소재캡스톤디자인2', credit: 3 },
                 ].map((c, i) => (
@@ -359,7 +519,50 @@ function MicroDegreeGuideModal({ onClose }) {
                 ))}
               </div>
               <div style={{ marginTop: 7, fontSize: 10, color: '#0F6E56', fontWeight: 700 }}>
-                → 합계 15학점 전부 이수 시 수여
+                → 총 14학점 중 <strong>12학점 이상</strong> 취득 시 수여
+              </div>
+            </div>
+
+            {/* MD4 */}
+            <div style={{ borderRadius: 8, border: '1.5px solid #7C3AED60', background: '#F3EFFE', padding: '10px 13px', marginTop: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, background: '#7C3AED', color: '#fff', fontWeight: 700 }}>MD 4</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#7C3AED' }}>화학분析 전문자격</span>
+                <button
+                  onClick={onOpenCert}
+                  style={{
+                    marginLeft: 'auto', fontSize: 9, padding: '3px 9px', borderRadius: 10,
+                    background: '#7C3AED', color: '#fff', border: 'none', cursor: 'pointer',
+                    fontWeight: 700, display: 'flex', alignItems: 'center', gap: 3,
+                  }}
+                >📋 관련 자격증 정보 보기</button>
+              </div>
+              <div style={{ fontSize: 10, color: '#4C1D95', marginBottom: 6 }}>
+                <strong>아래 5과목(총 14학점) 전부 이수 시 수여</strong>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {[
+                  { name: '분析화학2', credit: 3 },
+                  { name: '기기분析:전기분析', credit: 3 },
+                  { name: '기기분析:분광학', credit: 3 },
+                  { name: '무기물및소재합성론', credit: 3 },
+                  { name: '무기화학실험1', credit: 2 },
+                ].map((c, i) => (
+                  <div key={i} style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '5px 8px', borderRadius: 5, background: '#fff',
+                    border: '0.5px solid #7C3AED30',
+                    fontSize: 10, color: '#4C1D95',
+                  }}>
+                    <span style={{ fontWeight: 700, color: '#7C3AED', flexShrink: 0 }}>✓</span>
+                    <span style={{ flex: 1, fontWeight: 500 }}>{c.name}</span>
+                    <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: '#F3EFFE', color: '#7C3AED', flexShrink: 0 }}>화학나노학전공</span>
+                    <span style={{ fontSize: 9, color: '#6B7280', flexShrink: 0 }}>{c.credit}학점</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 7, fontSize: 10, color: '#7C3AED', fontWeight: 700 }}>
+                → 합계 14학점 <strong>전부 이수</strong> 시 수여
               </div>
             </div>
           </div>
@@ -445,6 +648,7 @@ export default function Step5Roadmap() {
   const [activeCourse, setActiveCourse] = useState(null);
   const [showDim, setShowDim] = useState(false);
   const [microGuideOpen, setMicroGuideOpen] = useState(false);
+  const [certOpen, setCertOpen] = useState(false);
 
   if (!result) {
     return (
@@ -495,7 +699,8 @@ export default function Step5Roadmap() {
 
   return (
     <div>
-      {microGuideOpen && <MicroDegreeGuideModal onClose={() => setMicroGuideOpen(false)} />}
+      {certOpen && <CertInfoModal onClose={() => setCertOpen(false)} />}
+      {microGuideOpen && <MicroDegreeGuideModal onClose={() => setMicroGuideOpen(false)} onOpenCert={() => { setMicroGuideOpen(false); setCertOpen(true); }} />}
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
         <div style={{ fontSize: 14, fontWeight: 700 }}>
