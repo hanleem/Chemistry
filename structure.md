@@ -80,15 +80,15 @@ Chemistry-master/
 │   │   │   ├── Step0Career.jsx
 │   │   │   ├── Step1Basic.jsx
 │   │   │   ├── Steps2_3_4.jsx
-│   │   │   ├── Step5Roadmap.jsx
-│   │   │   ├── AdminPage.jsx
+│   │   │   ├── Step5Roadmap.jsx    # 로드맵 + 마이크로디그리 모달 + 자격증 모달
+│   │   │   ├── AdminPage.jsx       # 교과설명 수정 + 접속자 통계 탭
 │   │   │   └── NoticeModal.jsx
 │   │   ├── components/index.jsx
 │   │   └── data/
 │   │       ├── careerPaths.js
-│   │       ├── courses.js
+│   │       ├── courses.js          # 소재캡스톤디자인1,2 → 3학점
 │   │       ├── modules.js
-│   │       ├── pathways.js
+│   │       ├── pathways.js         # MICRO_DEGREES 4종 정의
 │   │       └── courseDescs.js
 │   ├── vite.config.js              # /api → :3000 프록시
 │   └── package.json
@@ -103,10 +103,11 @@ Chemistry-master/
 │       ├── notices.js
 │       ├── reservations.js
 │       ├── fairPosters.js          # 부스1 대표그림 (base64 JSON)
-│       ├── fairBooth2.js           # 부스2 포스터/PDF (binary)
+│       ├── fairBooth2.js           # 부스2 포스터 (binary, 이미지 전용)
 │       ├── fairSchedule.js
 │       ├── fairGradSchedule.js
-│       └── fairRnd.js
+│       ├── fairRnd.js
+│       └── visits.js               # 접속자 수 기록 + 통계 (관리자)
 ├── data/chem.db                    # SQLite DB
 ├── deploy/
 │   ├── chem-app.service
@@ -155,16 +156,19 @@ Chemistry-master/
 | `/api/notices` | `notices.js` | GET, POST, PATCH /:id, DELETE /:id | public/admin |
 | `/api/reservations` | `reservations.js` | GET, POST, DELETE | 로그인 |
 | `/api/fair-posters` | `fairPosters.js` | GET, POST /:labId, DELETE /:labId | public/admin |
-| `/api/fair-booth2` | `fairBooth2.js` | GET, POST (binary), DELETE /:id, PATCH /:id | public/admin |
+| `/api/fair-booth2` | `fairBooth2.js` | GET, POST (binary), DELETE /:id | public/admin |
 | `/api/fair-schedule` | `fairSchedule.js` | GET, POST, DELETE /:profName | public/admin |
 | `/api/fair-grad-schedule` | `fairGradSchedule.js` | GET, POST, PATCH /:id, DELETE /:id | public/admin |
 | `/api/fair-rnd` | `fairRnd.js` | GET, POST, PATCH /:id, DELETE /:id | public/admin |
+| `/api/visits` | `visits.js` | POST (접속 기록), GET /stats | 로그인 / admin |
 
-> **부스2 파일 업로드 방식**  
-> 이미지/PDF → `Content-Type: application/octet-stream` (binary body)  
-> `express.raw({ type: '*/*', limit: '100mb' })` 로 파싱  
-> 메타데이터(`lab_name`, `poster_type`)는 쿼리스트링으로 전달  
-> 서버에서 `Buffer.toString('base64')` → `data:타입;base64,...` 형식으로 DB 저장
+> **부스2 파일 업로드 방식 (이미지 전용)**
+> - `accept="image/*"` — PDF 업로드 불가, 이미지만 허용
+> - `Content-Type: application/octet-stream` (binary body)
+> - `express.raw({ type: '*/*', limit: '100mb' })` 로 파싱
+> - 메타데이터(`lab_name`, `poster_type`)는 쿼리스트링으로 전달
+> - 서버에서 `Buffer.toString('base64')` → `data:타입;base64,...` 형식으로 DB 저장
+> - 갤러리: 2열 그리드 (`grid-template-columns: 1fr 1fr`)
 
 ### 3-4. 인증 미들웨어 — `middleware/auth.js`
 
@@ -188,6 +192,7 @@ Chemistry-master/
 - 이수 설계 6단계 컴포넌트 라우팅 (`STEP_COMPONENTS[step]`)
 - 로그인 전 → `AuthPage` 렌더
 - `user.role === 'admin'` 일 때 관리자 버튼 노출
+- **접속 기록**: 로그인 성공 시 `POST /api/visits` 자동 호출 (하루 1회 중복 무시)
 
 ### 4-2. 페이지 목록 — `pages/`
 
@@ -197,9 +202,39 @@ Chemistry-master/
 | `Step0Career.jsx` | 0 | 진로 경로 선택 (취업/대학원/유학 등) |
 | `Step1Basic.jsx` | 1 | 기초·교양 과목 선택 (최대 2개) |
 | `Steps2_3_4.jsx` | 2-4 | 기초모듈 → 심화과목 → 심화모듈 선택 |
-| `Step5Roadmap.jsx` | 5 | 로드맵 완성·저장·불러오기 |
-| `AdminPage.jsx` | — | 교과 설명 수정, 공지사항 CRUD |
+| `Step5Roadmap.jsx` | 5 | 로드맵 완성·저장·불러오기 + 모달 2종 |
+| `AdminPage.jsx` | — | 교과 설명 수정 탭 + 접속자 통계 탭 |
 | `NoticeModal.jsx` | — | 공지사항 팝업 (학생용) |
+
+#### Step5Roadmap.jsx 상세
+
+로드맵 화면 최상단에 버튼 2개가 나란히 표시됩니다.
+
+| 버튼 | 색상 | 열리는 모달 |
+|---|---|---|
+| 🎓 마이크로디그리 신청방법 | 파란색 | `MicroDegreeGuideModal` |
+| 📋 자격증 정보 | 보라색 | `CertInfoModal` |
+
+**`MicroDegreeGuideModal`**
+- 마이크로디그리 제도 소개
+- 화학나노학전공 개설 마이크로디그리 4종 이수 요건 (아래 참조)
+- 신청 절차 (수강 자체로 신청 갈음, MSI 4학년부터 이수증 발급)
+- 이수 혜택 안내
+
+**`CertInfoModal`**
+- 화학과 관련 국가기술자격증 23종을 6개 카테고리로 분류
+- 카테고리 탭 필터 기능
+- Q-net(큐넷) 링크 포함
+
+```
+카테고리: 화학분석 / 위험물·화공 / 바이오·농화학 / 환경-대기·수질 / 산업안전·폐기물 / 화약류
+```
+
+#### AdminPage.jsx 상세
+
+탭 2개:
+- **📚 교과 설명** — 기존 교과목 설명 수정·초기화 기능
+- **📊 접속 통계** — `VisitsTab` 컴포넌트: 이번 달/오늘 접속자 카드, 일별 바 차트, 최근 12개월 월별 테이블
 
 ### 4-3. 공용 컴포넌트 — `components/`
 
@@ -240,8 +275,27 @@ Chemistry-master/
 | `careerPaths.js` | 진로 경로 배열 (id, label, color, modules) |
 | `courses.js` | 전체 교과 목록 (id, name, credit, kind, module 등) |
 | `modules.js` | 모듈 메타데이터 (color, bg, icon) |
-| `pathways.js` | 트랙·마이크로전공 정의 + `computePathway()` |
+| `pathways.js` | 트랙·마이크로디그리 정의 + `computePathway()` |
 | `courseDescs.js` | 교과 설명 기본값 + `loadAdminOverrides()` |
+
+#### courses.js 주요 변경사항
+
+| 과목 | credit |
+|---|---|
+| 소재캡스톤디자인1 (`cap1`) | 3학점 (구 4학점) |
+| 소재캡스톤디자인2 (`cap2`) | 3학점 (구 4학점) |
+
+#### pathways.js — MICRO_DEGREES (4종)
+
+| id | 이름 | 이수 요건 |
+|---|---|---|
+| `mds_design` | 에너지소재설계·분析 | 4과목 전부: 에너지소재모델링·소재캡스톤디자인1·나노공정개론·나노계측론 (12학점) |
+| `mds_energy_nano` | 에너지화학·나노융합 | 4과목 전부: 에너지소재모델링·기기분析:전기분析·기능성나노소재·에너지화학 (12학점) |
+| `mds_adv_energy` | 첨단에너지소재엔지니어 | 5과목 총 14학점 중 12학점 이상 취득 |
+| `mds_chem_analysis` | 화학분析 전문자격 | 5과목 14학점 전부: 분析화학2·기기분析:전기분析·기기분析:분광학·무기물및소재합성론·무기화학실험1 |
+
+> **마이크로디그리 신청**: 해당 교과목 수강 자체로 신청 갈음 (별도 절차 없음)  
+> **이수증 발급**: MSI(학생정보시스템) → 학사행정 → 성적 → 마이크로디그리조회 (4학년부터)
 
 ---
 
@@ -261,7 +315,7 @@ Chemistry-master/
 |---|---|
 | `#screen-intro` | 소개 화면 + 관리자 로그인 버튼 |
 | `#screen-booth1` | 부스 1: 연구실별 대표그림 |
-| `#screen-booth2` | 부스 2: 연구 포스터/PDF 갤러리 |
+| `#screen-booth2` | 부스 2: 연구 포스터 갤러리 (이미지 전용, 2열) |
 | `#screen-booth3` | 부스 3: 교수 상담 + 대학원 상담 + R&D 프로그램 |
 
 **상단 관리자 바 (`#fair-admin-bar`)**
@@ -275,18 +329,22 @@ isAdmin           // 관리자 여부
 fairPosters       // { labId: { poster_data, poster_type } }
 fairSchedule      // 교수 상담 일정 배열
 booth2Posters     // 부스2 포스터 배열
-b2SelectedFile    // 업로드 대기 중인 File 객체
+b2SelectedFile    // 업로드 대기 중인 File 객체 (이미지만 허용)
 gradSchedule      // 대학원생 상담 블록 배열
 rndPrograms       // R&D 프로그램 배열
 ```
 
-**파일 업로드 흐름 (부스2)**
+**파일 업로드 흐름 (부스2 — 이미지 전용)**
 
 ```
-onB2FileChange() → b2SelectedFile = File 객체 저장
-submitB2Poster() → file.arrayBuffer() → fetch(binary) → /api/fair-booth2?lab_name=...
-setupPdfEmbeds() → base64 → Blob → URL.createObjectURL() → <embed> 렌더
+onB2FileChange() → accept="image/*" 체크 → b2SelectedFile = File 객체
+submitB2Poster() → file.arrayBuffer() → fetch(binary, Content-Type: octet-stream)
+                → /api/fair-booth2?lab_name=...&poster_type=image/...
+갤러리 렌더: <img src="data:image/...;base64,..."> 2열 그리드
 ```
+
+> **PDF 업로드 제거**: 이전 PDF 업로드·다운로드 기능은 완전히 제거됨.  
+> **업로드 안내**: 폼 상단에 "이미지 파일(JPG, PNG 등)로 업로드해 주세요" 가이드라인 표시.
 
 **관리자 계정**: `chemistry / 236250`
 
@@ -312,10 +370,29 @@ PC 예약 시스템 (9월 오픈 예정).
 | `course_descs` | 교과 설명 관리자 수정본 (course_id PK) |
 | `notices` | 공지사항 (제목, 내용, 링크, 포스터 이미지) |
 | `fair_posters` | 부스1 대표그림 (lab_id UNIQUE, base64) |
-| `fair_booth2_posters` | 부스2 포스터/PDF (lab_name, base64 data URL) |
+| `fair_booth2_posters` | 부스2 포스터 이미지 (lab_name, base64 data URL) |
 | `fair_schedule` | 교수 상담 일정 (prof_name PK) |
 | `fair_grad_schedule` | 대학원생 상담 블록 (time_slot, lab_labels JSON) |
 | `fair_rnd_programs` | R&D 프로그램 (badge, title, features JSON) |
+| `visit_logs` | 접속자 기록 (user_id, visit_date, visit_month, UNIQUE(user_id, visit_date)) |
+
+**`visit_logs` 인덱스**: `idx_visit_month ON visit_logs(visit_month)`
+
+**접속자 통계 집계 방식**
+
+```sql
+-- 이번 달 고유 접속자
+SELECT COUNT(DISTINCT user_id) FROM visit_logs WHERE visit_month = 'YYYY-MM'
+
+-- 오늘 고유 접속자
+SELECT COUNT(DISTINCT user_id) FROM visit_logs WHERE visit_date = 'YYYY-MM-DD'
+
+-- 누적 (일별 중복 제거)
+SELECT COUNT(DISTINCT user_id || visit_date) FROM visit_logs
+```
+
+> KST 기준 날짜 처리: `new Date().getTime() + 9 * 60 * 60 * 1000`  
+> 월별 카운트는 1일이 되면 자동으로 새 달 집계 시작 (별도 리셋 불필요)
 
 ---
 
@@ -325,8 +402,12 @@ PC 예약 시스템 (9월 오픈 예정).
 |---|---|
 | 상단 네비게이션 버튼 | `client/src/App.jsx` |
 | 이수 설계 단계 UI | `client/src/pages/Step*.jsx` |
-| 진로 경로 · 교과 데이터 | `client/src/data/*.js` |
+| 진로 경로 · 교과 데이터 | `client/src/data/careerPaths.js`, `courses.js` |
+| 마이크로디그리 이수 요건 | `client/src/data/pathways.js` (MICRO_DEGREES) |
+| 마이크로디그리 신청방법 모달 내용 | `client/src/pages/Step5Roadmap.jsx` (`MicroDegreeGuideModal`) |
+| 자격증 정보 모달 내용 | `client/src/pages/Step5Roadmap.jsx` (`CERT_DATA`, `CertInfoModal`) |
 | 공지사항 관리 | `AdminPage.jsx` + `server/routes/notices.js` |
+| 접속자 통계 조회 (관리자) | `AdminPage.jsx` (`VisitsTab`) + `server/routes/visits.js` |
 | 박람회 UI/로직 전반 | `client/public/fair/index.html` |
 | 부스2 파일 업로드 서버 | `server/routes/fairBooth2.js` |
 | 교수 상담 관리 | `fair/index.html` + `server/routes/fairSchedule.js` |
@@ -369,3 +450,13 @@ npm start
 # 업데이트 배포
 git pull && npm run install:all && npm run build && sudo systemctl restart chem-app
 ```
+
+**수정 후 배포 체크**
+
+| 수정 내용 | 빌드 필요 | 서버 재시작 필요 |
+|---|---|---|
+| `client/src/` 변경 | ✅ | ❌ |
+| `client/public/` 변경 | ✅ | ❌ |
+| `server/` 변경 | ❌ | ✅ |
+| `.env` 변경 | ❌ | ✅ |
+| `server/db.js` 변경 | ❌ | ✅ |
