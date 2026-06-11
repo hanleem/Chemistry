@@ -17,6 +17,8 @@
       --taken-bd:  #bbb;
       --past-bg:   #f8f8f8;
       --today-bd:  #f5c842;
+      --block-bg:  #0d2137;
+      --block-bd:  #1a5c8c;
     }
     * { margin:0; padding:0; box-sizing:border-box; }
     body { font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;
@@ -31,11 +33,18 @@
     }
     .hdr-title { font-size:15px; font-weight:800; }
     .hdr-sub   { font-size:11px; opacity:.7; margin-top:2px; }
+    .hdr-right { display:flex; gap:8px; align-items:center; }
     .hdr-back  {
       background:rgba(255,255,255,.15); border:none; color:#fff;
       padding:7px 14px; border-radius:20px; cursor:pointer; font-size:12px;
     }
     .hdr-back:hover { background:rgba(255,255,255,.28); }
+    .hdr-admin {
+      background:rgba(245,200,66,.2); border:1px solid rgba(245,200,66,.5);
+      color:#f5c842; padding:6px 12px; border-radius:20px;
+      cursor:pointer; font-size:11px; font-weight:700;
+    }
+    .hdr-admin:hover { background:rgba(245,200,66,.35); }
 
     /* ── period nav ── */
     .period-nav {
@@ -57,14 +66,12 @@
     table { border-collapse:collapse; min-width:600px; width:100%; }
     th, td { border:1px solid #dde8f0; padding:0; }
 
-    /* time header col */
     .th-time {
       background:var(--navy); color:#fff;
       font-size:11px; font-weight:700;
       padding:8px 10px; text-align:center;
       min-width:68px; position:sticky; left:0; z-index:10;
     }
-    /* date header */
     .th-date {
       background:linear-gradient(180deg,var(--blue),var(--navy));
       color:#fff; text-align:center; padding:8px 4px; min-width:80px;
@@ -75,14 +82,11 @@
     .th-date.today   { background:linear-gradient(180deg,#1a5c40,#0d3d28); border-bottom:3px solid var(--today-bd); }
     .th-date.weekend { background:linear-gradient(180deg,#3a2060,#251040); }
 
-    /* time label cell */
     .td-time {
       background:#f5faff; font-size:11px; font-weight:700;
       color:var(--blue); text-align:center; padding:10px 6px;
       position:sticky; left:0; z-index:5; border-right:2px solid #c0d8ea;
     }
-
-    /* slot cell */
     .cell { padding:4px; height:52px; }
     .slot {
       width:100%; height:100%; border-radius:8px;
@@ -101,6 +105,10 @@
     }
     .slot.taken:hover { box-shadow:0 2px 8px rgba(0,0,0,.12); }
     .slot.past  { background:var(--past-bg); color:#bbb; border:1.5px solid #e8e8e8; cursor:default; }
+    .slot.blocked {
+      background:linear-gradient(135deg,#0d2137,#1a3a5c);
+      color:#5ad0d8; border:1.5px solid #1a5c8c; cursor:default;
+    }
     .slot-icon  { font-size:14px; }
     .slot-name  { font-size:10px; max-width:68px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
@@ -110,14 +118,13 @@
       padding:12px 16px; font-size:11px; color:#666;
     }
     .legend-item { display:flex; align-items:center; gap:5px; }
-    .leg-dot {
-      width:14px; height:14px; border-radius:4px; border:1.5px solid;
-    }
+    .leg-dot { width:14px; height:14px; border-radius:4px; border:1.5px solid; }
     .leg-dot.available { background:var(--avail-bg); border-color:var(--avail-bd); }
     .leg-dot.taken     { background:var(--taken-bg); border-color:var(--taken-bd); }
     .leg-dot.past      { background:var(--past-bg);  border-color:#e8e8e8; }
+    .leg-dot.blocked   { background:#0d2137; border-color:#1a5c8c; }
 
-    /* ── modal ── */
+    /* ── modal (공통) ── */
     .overlay {
       display:none; position:fixed; inset:0;
       background:rgba(0,0,0,.45); z-index:200;
@@ -146,6 +153,64 @@
     .btn-danger { flex:2; padding:10px; border-radius:8px; border:none; background:linear-gradient(135deg,#c0392b,#e74c3c); color:#fff; cursor:pointer; font-size:13px; font-weight:700; }
     .modal-error { font-size:11px; color:#e74c3c; margin-bottom:10px; padding:7px 10px; background:#ffeaea; border-radius:6px; }
 
+    /* ── admin panel ── */
+    .admin-overlay { align-items:flex-end; padding:0; }
+    .admin-box {
+      background:#fff; width:100%; max-width:520px; max-height:80vh;
+      border-radius:20px 20px 0 0; padding:24px 20px 32px;
+      box-shadow:0 -8px 40px rgba(0,0,0,.2); overflow-y:auto;
+      animation:slideUp .25s ease;
+    }
+    @keyframes slideUp { from{transform:translateY(40px);opacity:0} to{transform:translateY(0);opacity:1} }
+    .admin-box h2 { font-size:16px; font-weight:800; color:var(--navy); margin-bottom:18px; }
+    .admin-form { background:#f5faff; border-radius:10px; padding:16px; margin-bottom:20px; }
+    .admin-form h3 { font-size:12px; font-weight:700; color:var(--blue); margin-bottom:12px; letter-spacing:.3px; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+    .form-row.single { grid-template-columns:1fr; }
+    .fg { display:flex; flex-direction:column; gap:4px; }
+    .fg label { font-size:10px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:.8px; }
+    .fg input, .fg select {
+      padding:8px 10px; border-radius:8px; border:1.5px solid #dde;
+      font-size:12px; font-family:inherit; outline:none; background:#fff;
+    }
+    .fg input:focus, .fg select:focus { border-color:var(--cyan); }
+    .btn-add-block {
+      width:100%; padding:10px; border-radius:8px; border:none;
+      background:linear-gradient(135deg,var(--navy),var(--blue));
+      color:#fff; font-size:13px; font-weight:700; cursor:pointer; margin-top:4px;
+    }
+    .btn-add-block:hover { opacity:.88; }
+    .block-list h3 { font-size:12px; font-weight:700; color:var(--blue); margin-bottom:10px; letter-spacing:.3px; }
+    .block-item {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 12px; background:#f8f9fa; border-radius:8px;
+      margin-bottom:8px; border-left:3px solid var(--cyan);
+    }
+    .block-item-info .block-name { font-size:13px; font-weight:700; color:var(--navy); margin-bottom:3px; }
+    .block-item-info .block-meta { font-size:11px; color:#777; }
+    .btn-del-block {
+      background:#fee; border:1px solid #fcc; color:#c05050;
+      padding:5px 10px; border-radius:6px; font-size:11px;
+      cursor:pointer; font-weight:700; white-space:nowrap; flex-shrink:0;
+      margin-left:8px;
+    }
+    .btn-del-block:hover { background:#fcc; }
+    .block-empty { font-size:12px; color:#aaa; text-align:center; padding:16px; }
+    .admin-error { font-size:11px; color:#e74c3c; padding:7px 10px; background:#ffeaea; border-radius:6px; margin-bottom:10px; }
+
+    /* ── blocked info panel ── */
+    .block-info-bar {
+      margin:0 16px 0; padding:10px 14px;
+      background:linear-gradient(135deg,#0d2137,#1a3a5c);
+      border-radius:10px; display:none;
+    }
+    .block-info-bar.show { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .block-info-bar .bar-title { font-size:11px; color:rgba(255,255,255,.6); }
+    .block-tag {
+      background:rgba(0,196,204,.15); border:1px solid rgba(0,196,204,.4);
+      color:#5ad0d8; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600;
+    }
+
     /* ── toast ── */
     .toast {
       position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
@@ -155,8 +220,6 @@
       opacity:0; transition:opacity .3s; pointer-events:none;
     }
     .toast.show { opacity:1; }
-
-    /* ── loading ── */
     .loading { text-align:center; padding:40px; color:#888; font-size:13px; }
   </style>
 </head>
@@ -168,7 +231,10 @@
     <div class="hdr-title">💻 컴퓨터 예약 시스템</div>
     <div class="hdr-sub">명지대학교 화학나노학전공</div>
   </div>
-  <button class="hdr-back" onclick="history.back()">← 돌아가기</button>
+  <div class="hdr-right">
+    <button class="hdr-admin" id="btn-admin" style="display:none" onclick="openAdminPanel()">⚙ 관리</button>
+    <button class="hdr-back" onclick="history.back()">← 돌아가기</button>
+  </div>
 </div>
 
 <!-- Period navigation -->
@@ -176,6 +242,11 @@
   <button class="nav-btn" id="btn-prev">‹</button>
   <div class="period-label" id="period-label">로딩 중…</div>
   <button class="nav-btn" id="btn-next">›</button>
+</div>
+
+<!-- Block info bar -->
+<div class="block-info-bar" id="block-info-bar">
+  <span class="bar-title">📚 이 기간 수업 일정:</span>
 </div>
 
 <!-- Calendar -->
@@ -191,6 +262,7 @@
 <div class="legend">
   <div class="legend-item"><div class="leg-dot available"></div> 예약 가능</div>
   <div class="legend-item"><div class="leg-dot taken"></div> 예약됨 (클릭 시 취소)</div>
+  <div class="legend-item"><div class="leg-dot blocked"></div> 수업 차단</div>
   <div class="legend-item"><div class="leg-dot past"></div> 지난 시간</div>
 </div>
 
@@ -222,22 +294,81 @@
   </div>
 </div>
 
+<!-- Admin panel (bottom sheet) -->
+<div class="overlay admin-overlay" id="admin-panel">
+  <div class="admin-box">
+    <h2>⚙ 수업 차단 일정 관리</h2>
+
+    <!-- Add block form -->
+    <div class="admin-form">
+      <h3>새 차단 일정 추가</h3>
+      <div class="admin-error" id="admin-error" style="display:none"></div>
+      <div class="form-row single">
+        <div class="fg"><label>수업명</label><input type="text" id="blk-name" placeholder="예: 에너지 모델링" maxlength="40"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>시작일</label><input type="date" id="blk-start-date"></div>
+        <div class="fg"><label>종료일</label><input type="date" id="blk-end-date"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg">
+          <label>시작 시간</label>
+          <select id="blk-start-time">
+            <option value="09:00">09:00</option><option value="10:00">10:00</option>
+            <option value="11:00">11:00</option><option value="12:00">12:00</option>
+            <option value="13:00">13:00</option><option value="14:00">14:00</option>
+            <option value="15:00">15:00</option><option value="16:00">16:00</option>
+            <option value="17:00">17:00</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>종료 시간 (미포함)</label>
+          <select id="blk-end-time">
+            <option value="10:00">10:00</option><option value="11:00">11:00</option>
+            <option value="12:00" selected>12:00</option><option value="13:00">13:00</option>
+            <option value="14:00">14:00</option><option value="15:00">15:00</option>
+            <option value="16:00">16:00</option><option value="17:00">17:00</option>
+            <option value="18:00">18:00</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-add-block" onclick="addBlock()">+ 차단 일정 추가</button>
+    </div>
+
+    <!-- Block list -->
+    <div class="block-list">
+      <h3>현재 차단 일정</h3>
+      <div id="admin-block-list"></div>
+    </div>
+
+    <div style="margin-top:16px">
+      <button class="btn-cancel" style="width:100%" onclick="closeModal('admin-panel')">닫기</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-/* ──────────────────────────────────────
+/* ──────────────────────────────────
    설정
-────────────────────────────────────── */
-const TIME_SLOTS = [
-  '09:00','10:00','11:00','12:00',
-  '13:00','14:00','15:00','16:00','17:00'
-];
+────────────────────────────────── */
+const TIME_SLOTS = ['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
 const DAY_KO = ['일','월','화','수','목','금','토'];
 
-/* ──────────────────────────────────────
-   기간(2주) 계산
-────────────────────────────────────── */
+/* ──────────────────────────────────
+   상태
+────────────────────────────────── */
+let period = getPeriodForDate(new Date());
+let reservations = {};
+let blocks = [];
+let pendingCell = null;
+let isAdmin = false;
+
+/* ──────────────────────────────────
+   기간 계산
+────────────────────────────────── */
 function getPeriodForDate(d) {
   const y = d.getFullYear(), m = d.getMonth();
   if (d.getDate() <= 14) {
@@ -247,120 +378,142 @@ function getPeriodForDate(d) {
     return { start: new Date(y, m, 15), end: new Date(y, m, last) };
   }
 }
-function prevPeriod(p) {
-  const d = new Date(p.start); d.setDate(d.getDate() - 1);
-  return getPeriodForDate(d);
-}
-function nextPeriod(p) {
-  const d = new Date(p.end); d.setDate(d.getDate() + 1);
-  return getPeriodForDate(d);
-}
+function prevPeriod(p) { const d = new Date(p.start); d.setDate(d.getDate()-1); return getPeriodForDate(d); }
+function nextPeriod(p) { const d = new Date(p.end);   d.setDate(d.getDate()+1); return getPeriodForDate(d); }
 function fmtDate(d) {
-  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), dd = String(d.getDate()).padStart(2,'0');
-  return `${y}-${m}-${dd}`;
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 function datesBetween(start, end) {
-  const arr = [], cur = new Date(start);
-  while (cur <= end) { arr.push(new Date(cur)); cur.setDate(cur.getDate()+1); }
+  const arr=[], cur=new Date(start);
+  while(cur<=end){arr.push(new Date(cur));cur.setDate(cur.getDate()+1);}
   return arr;
 }
 
-/* ──────────────────────────────────────
-   상태
-────────────────────────────────────── */
-let period = getPeriodForDate(new Date());
-let reservations = {};   // key: "date|slot" → { id, name }
-let pendingCell = null;  // { date, slot } or { id, name, date, slot }
+/* ──────────────────────────────────
+   차단 헬퍼
+────────────────────────────────── */
+function getBlock(date, slot) {
+  return blocks.find(b => date >= b.start_date && date <= b.end_date && slot >= b.start_time && slot < b.end_time) || null;
+}
 
-/* ──────────────────────────────────────
+/* ──────────────────────────────────
    API
-────────────────────────────────────── */
+────────────────────────────────── */
 async function fetchReservations() {
-  const s = fmtDate(period.start), e = fmtDate(period.end);
-  const res = await fetch(`/api/reservations?start=${s}&end=${e}`);
-  const data = await res.json();
-  reservations = {};
-  data.forEach(r => { reservations[`${r.date}|${r.time_slot}`] = { id: r.id, name: r.name }; });
+  const s=fmtDate(period.start), e=fmtDate(period.end);
+  const res=await fetch(`/api/reservations?start=${s}&end=${e}`);
+  const data=await res.json();
+  reservations={};
+  data.forEach(r=>{reservations[`${r.date}|${r.time_slot}`]={id:r.id,name:r.name};});
+}
+
+async function fetchBlocks() {
+  const res = await fetch('/api/lab-blocks');
+  blocks = await res.json();
+}
+
+async function checkAuth() {
+  try {
+    const res = await fetch('/api/auth/me', { credentials:'include' });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.user?.role === 'admin') {
+      isAdmin = true;
+      document.getElementById('btn-admin').style.display = '';
+    }
+  } catch {}
 }
 
 async function postReservation(date, time_slot, name) {
-  const res = await fetch('/api/reservations', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ date, time_slot, name })
-  });
+  const res=await fetch('/api/reservations',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({date,time_slot,name})});
   return res.json();
 }
-
 async function deleteReservation(id, name) {
-  const res = await fetch(`/api/reservations/${id}`, {
-    method:'DELETE', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ name })
-  });
+  const res=await fetch(`/api/reservations/${id}`,{method:'DELETE',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({name})});
   return res.json();
 }
 
-/* ──────────────────────────────────────
+/* ──────────────────────────────────
+   차단 바 (기간 내 수업 요약)
+────────────────────────────────── */
+function renderBlockBar() {
+  const s=fmtDate(period.start), e=fmtDate(period.end);
+  const active=blocks.filter(b=>b.start_date<=e && b.end_date>=s);
+  const bar=document.getElementById('block-info-bar');
+  if(!active.length){bar.classList.remove('show');return;}
+  bar.innerHTML='<span class="bar-title">📚 이 기간 수업 일정:</span>';
+  active.forEach(b=>{
+    const tag=document.createElement('span');
+    tag.className='block-tag';
+    const sd=b.start_date.slice(5).replace('-','/'), ed=b.end_date.slice(5).replace('-','/');
+    tag.textContent=`${b.class_name} (${sd}~${ed} · ${b.start_time}–${b.end_time})`;
+    bar.appendChild(tag);
+  });
+  bar.classList.add('show');
+}
+
+/* ──────────────────────────────────
    렌더
-────────────────────────────────────── */
+────────────────────────────────── */
 function renderPeriodLabel() {
-  const s = period.start, e = period.end;
-  const label = s.getMonth() === e.getMonth()
+  const s=period.start, e=period.end;
+  const label = s.getMonth()===e.getMonth()
     ? `${s.getFullYear()}년 ${s.getMonth()+1}월 ${s.getDate()}일 ~ ${e.getDate()}일`
     : `${s.getFullYear()}년 ${s.getMonth()+1}월 ${s.getDate()}일 ~ ${e.getMonth()+1}월 ${e.getDate()}일`;
-  document.getElementById('period-label').textContent = label;
+  document.getElementById('period-label').textContent=label;
 }
 
 function renderTable() {
-  const dates = datesBetween(period.start, period.end);
-  const today = fmtDate(new Date());
-  const now   = new Date();
+  const dates=datesBetween(period.start,period.end);
+  const today=fmtDate(new Date());
+  const now=new Date();
 
-  // thead
-  const thead = document.getElementById('thead-row');
-  thead.innerHTML = '<th class="th-time">시간</th>';
-  dates.forEach(d => {
-    const ds = fmtDate(d);
-    const dow = d.getDay();
-    const cls = ['th-date', ds === today ? 'today' : '', (dow===0||dow===6) ? 'weekend' : ''].filter(Boolean).join(' ');
-    thead.innerHTML += `
-      <th class="${cls}">
-        <div class="d-name">${DAY_KO[dow]}요일</div>
-        <div class="d-num">${d.getDate()}</div>
-        <div class="d-mon">${d.getMonth()+1}월</div>
-      </th>`;
+  const thead=document.getElementById('thead-row');
+  thead.innerHTML='<th class="th-time">시간</th>';
+  dates.forEach(d=>{
+    const ds=fmtDate(d); const dow=d.getDay();
+    const cls=['th-date', ds===today?'today':'', (dow===0||dow===6)?'weekend':''].filter(Boolean).join(' ');
+    thead.innerHTML+=`<th class="${cls}">
+      <div class="d-name">${DAY_KO[dow]}요일</div>
+      <div class="d-num">${d.getDate()}</div>
+      <div class="d-mon">${d.getMonth()+1}월</div>
+    </th>`;
   });
 
-  // tbody
-  const tbody = document.getElementById('tbody');
-  tbody.innerHTML = '';
-  TIME_SLOTS.forEach(slot => {
-    const tr = document.createElement('tr');
-    // time label
-    const slotEnd = String(Number(slot.split(':')[0]) + 1).padStart(2,'0') + ':00';
-    tr.innerHTML = `<td class="td-time">${slot}<br><span style="font-size:9px;opacity:.6;">~${slotEnd}</span></td>`;
+  const tbody=document.getElementById('tbody');
+  tbody.innerHTML='';
+  TIME_SLOTS.forEach(slot=>{
+    const tr=document.createElement('tr');
+    const slotEnd=String(Number(slot.split(':')[0])+1).padStart(2,'0')+':00';
+    tr.innerHTML=`<td class="td-time">${slot}<br><span style="font-size:9px;opacity:.6;">~${slotEnd}</span></td>`;
 
-    dates.forEach(d => {
-      const ds = fmtDate(d);
-      const key = `${ds}|${slot}`;
-      const slotDt = new Date(`${ds}T${slot}:00`);
-      const isPast = slotDt < now;
-      const rec = reservations[key];
+    dates.forEach(d=>{
+      const ds=fmtDate(d);
+      const key=`${ds}|${slot}`;
+      const slotDt=new Date(`${ds}T${slot}:00`);
+      const isPast=slotDt<now;
+      const rec=reservations[key];
+      const blk=getBlock(ds,slot);
+      const td=document.createElement('td');
+      td.className='cell';
 
-      const td = document.createElement('td');
-      td.className = 'cell';
-
-      if (isPast) {
-        td.innerHTML = `<button class="slot past" disabled>
-          <span class="slot-icon">—</span>
-          ${rec ? `<span class="slot-name">${rec.name}</span>` : ''}
+      if(blk){
+        td.innerHTML=`<button class="slot blocked" disabled title="${blk.class_name}">
+          <span class="slot-icon">🔒</span>
+          <span class="slot-name">${blk.class_name}</span>
         </button>`;
-      } else if (rec) {
-        td.innerHTML = `<button class="slot taken" data-key="${key}" data-id="${rec.id}" data-name="${rec.name}" data-date="${ds}" data-slot="${slot}">
+      } else if(isPast){
+        td.innerHTML=`<button class="slot past" disabled>
+          <span class="slot-icon">—</span>
+          ${rec?`<span class="slot-name">${rec.name}</span>`:''}
+        </button>`;
+      } else if(rec){
+        td.innerHTML=`<button class="slot taken" data-key="${key}" data-id="${rec.id}" data-name="${rec.name}" data-date="${ds}" data-slot="${slot}">
           <span class="slot-icon">👤</span>
           <span class="slot-name">${rec.name}</span>
         </button>`;
       } else {
-        td.innerHTML = `<button class="slot available" data-date="${ds}" data-slot="${slot}">
+        td.innerHTML=`<button class="slot available" data-date="${ds}" data-slot="${slot}">
           <span class="slot-icon">+</span>
         </button>`;
       }
@@ -371,125 +524,156 @@ function renderTable() {
 }
 
 async function load() {
-  document.getElementById('loading').style.display = 'block';
-  document.getElementById('cal-table').style.display = 'none';
+  document.getElementById('loading').style.display='block';
+  document.getElementById('cal-table').style.display='none';
   renderPeriodLabel();
   try {
-    await fetchReservations();
+    await Promise.all([fetchReservations(), fetchBlocks()]);
+    renderBlockBar();
     renderTable();
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('cal-table').style.display = '';
+    document.getElementById('loading').style.display='none';
+    document.getElementById('cal-table').style.display='';
   } catch(e) {
-    document.getElementById('loading').textContent = '❌ 서버에 연결할 수 없습니다. 잠시 후 다시 시도하세요.';
+    document.getElementById('loading').textContent='❌ 서버에 연결할 수 없습니다. 잠시 후 다시 시도하세요.';
   }
 }
 
-/* ──────────────────────────────────────
-   이벤트 위임
-────────────────────────────────────── */
-document.getElementById('tbody').addEventListener('click', e => {
-  const btn = e.target.closest('.slot');
-  if (!btn) return;
-
-  if (btn.classList.contains('available')) {
-    openReserveModal(btn.dataset.date, btn.dataset.slot);
-  } else if (btn.classList.contains('taken')) {
-    openCancelModal(Number(btn.dataset.id), btn.dataset.name, btn.dataset.date, btn.dataset.slot);
-  }
+/* ──────────────────────────────────
+   이벤트
+────────────────────────────────── */
+document.getElementById('tbody').addEventListener('click',e=>{
+  const btn=e.target.closest('.slot');
+  if(!btn||btn.disabled)return;
+  if(btn.classList.contains('available')) openReserveModal(btn.dataset.date,btn.dataset.slot);
+  else if(btn.classList.contains('taken')) openCancelModal(Number(btn.dataset.id),btn.dataset.name,btn.dataset.date,btn.dataset.slot);
 });
 
-/* ──────────────────────────────────────
+/* ──────────────────────────────────
    예약 모달
-────────────────────────────────────── */
-function openReserveModal(date, slot) {
-  pendingCell = { date, slot };
-  const slotEnd = String(Number(slot.split(':')[0])+1).padStart(2,'0')+':00';
-  document.getElementById('reserve-info').innerHTML =
-    `<strong>${date}</strong> &nbsp;${slot} ~ ${slotEnd} 시간대를 예약합니다.<br>이름을 입력하세요.`;
-  document.getElementById('reserve-name').value = '';
-  document.getElementById('reserve-error').style.display = 'none';
+────────────────────────────────── */
+function openReserveModal(date,slot){
+  pendingCell={date,slot};
+  const slotEnd=String(Number(slot.split(':')[0])+1).padStart(2,'0')+':00';
+  document.getElementById('reserve-info').innerHTML=`<strong>${date}</strong> &nbsp;${slot} ~ ${slotEnd} 시간대를 예약합니다.<br>이름을 입력하세요.`;
+  document.getElementById('reserve-name').value='';
+  document.getElementById('reserve-error').style.display='none';
   document.getElementById('modal-reserve').classList.add('show');
-  setTimeout(()=>document.getElementById('reserve-name').focus(), 50);
+  setTimeout(()=>document.getElementById('reserve-name').focus(),50);
 }
-
-document.getElementById('btn-do-reserve').onclick = async () => {
-  const name = document.getElementById('reserve-name').value.trim();
-  if (!name) { showModalError('reserve', '이름을 입력하세요.'); return; }
-  const btn = document.getElementById('btn-do-reserve');
-  btn.disabled = true; btn.textContent = '처리 중…';
-  const result = await postReservation(pendingCell.date, pendingCell.slot, name);
-  btn.disabled = false; btn.textContent = '예약 확정';
-  if (result.error) { showModalError('reserve', result.error); return; }
-  closeModal('modal-reserve');
-  showToast(`✅ ${name}님 예약 완료!`);
-  await load();
+document.getElementById('btn-do-reserve').onclick=async()=>{
+  const name=document.getElementById('reserve-name').value.trim();
+  if(!name){showModalError('reserve','이름을 입력하세요.');return;}
+  const btn=document.getElementById('btn-do-reserve');
+  btn.disabled=true;btn.textContent='처리 중…';
+  const result=await postReservation(pendingCell.date,pendingCell.slot,name);
+  btn.disabled=false;btn.textContent='예약 확정';
+  if(result.error){showModalError('reserve',result.error);return;}
+  closeModal('modal-reserve');showToast(`✅ ${name}님 예약 완료!`);await load();
 };
+document.getElementById('reserve-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btn-do-reserve').click();});
 
-document.getElementById('reserve-name').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('btn-do-reserve').click();
-});
-
-/* ──────────────────────────────────────
+/* ──────────────────────────────────
    취소 모달
-────────────────────────────────────── */
-function openCancelModal(id, name, date, slot) {
-  pendingCell = { id, name, date, slot };
-  const slotEnd = String(Number(slot.split(':')[0])+1).padStart(2,'0')+':00';
-  document.getElementById('cancel-info').innerHTML =
-    `<strong>${date}</strong> &nbsp;${slot} ~ ${slotEnd}<br>예약자: <strong>${name}</strong><br><br>취소하려면 예약 시 입력한 이름을 입력하세요.`;
-  document.getElementById('cancel-name').value = '';
-  document.getElementById('cancel-error').style.display = 'none';
+────────────────────────────────── */
+function openCancelModal(id,name,date,slot){
+  pendingCell={id,name,date,slot};
+  const slotEnd=String(Number(slot.split(':')[0])+1).padStart(2,'0')+':00';
+  document.getElementById('cancel-info').innerHTML=`<strong>${date}</strong> &nbsp;${slot} ~ ${slotEnd}<br>예약자: <strong>${name}</strong><br><br>취소하려면 예약 시 입력한 이름을 입력하세요.`;
+  document.getElementById('cancel-name').value='';
+  document.getElementById('cancel-error').style.display='none';
   document.getElementById('modal-cancel').classList.add('show');
-  setTimeout(()=>document.getElementById('cancel-name').focus(), 50);
+  setTimeout(()=>document.getElementById('cancel-name').focus(),50);
 }
-
-document.getElementById('btn-do-cancel').onclick = async () => {
-  const name = document.getElementById('cancel-name').value.trim();
-  if (!name) { showModalError('cancel', '이름을 입력하세요.'); return; }
-  const btn = document.getElementById('btn-do-cancel');
-  btn.disabled = true; btn.textContent = '처리 중…';
-  const result = await deleteReservation(pendingCell.id, name);
-  btn.disabled = false; btn.textContent = '취소 확정';
-  if (result.error) { showModalError('cancel', result.error); return; }
-  closeModal('modal-cancel');
-  showToast('🗑️ 예약이 취소되었습니다.');
-  await load();
+document.getElementById('btn-do-cancel').onclick=async()=>{
+  const name=document.getElementById('cancel-name').value.trim();
+  if(!name){showModalError('cancel','이름을 입력하세요.');return;}
+  const btn=document.getElementById('btn-do-cancel');
+  btn.disabled=true;btn.textContent='처리 중…';
+  const result=await deleteReservation(pendingCell.id,name);
+  btn.disabled=false;btn.textContent='취소 확정';
+  if(result.error){showModalError('cancel',result.error);return;}
+  closeModal('modal-cancel');showToast('🗑️ 예약이 취소되었습니다.');await load();
 };
+document.getElementById('cancel-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btn-do-cancel').click();});
 
-document.getElementById('cancel-name').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('btn-do-cancel').click();
-});
+/* ──────────────────────────────────
+   관리자 패널
+────────────────────────────────── */
+function openAdminPanel(){
+  renderAdminBlockList();
+  document.getElementById('admin-panel').classList.add('show');
+}
 
-/* ──────────────────────────────────────
+function renderAdminBlockList(){
+  const list=document.getElementById('admin-block-list');
+  if(!blocks.length){list.innerHTML='<div class="block-empty">등록된 차단 일정이 없습니다.</div>';return;}
+  list.innerHTML=blocks.map(b=>`
+    <div class="block-item">
+      <div class="block-item-info">
+        <div class="block-name">${b.class_name}</div>
+        <div class="block-meta">${b.start_date} ~ ${b.end_date} &nbsp;·&nbsp; ${b.start_time} – ${b.end_time}</div>
+      </div>
+      <button class="btn-del-block" onclick="deleteBlock(${b.id})">삭제</button>
+    </div>`).join('');
+}
+
+async function addBlock(){
+  const err=document.getElementById('admin-error');
+  err.style.display='none';
+  const class_name=document.getElementById('blk-name').value.trim();
+  const start_date=document.getElementById('blk-start-date').value;
+  const end_date=document.getElementById('blk-end-date').value;
+  const start_time=document.getElementById('blk-start-time').value;
+  const end_time=document.getElementById('blk-end-time').value;
+  if(!class_name||!start_date||!end_date){err.textContent='수업명과 기간을 입력하세요.';err.style.display='block';return;}
+  if(start_date>end_date){err.textContent='종료일이 시작일보다 빠릅니다.';err.style.display='block';return;}
+  if(start_time>=end_time){err.textContent='종료 시간이 시작 시간보다 빠릅니다.';err.style.display='block';return;}
+  const res=await fetch('/api/lab-blocks',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({class_name,start_date,end_date,start_time,end_time})});
+  const data=await res.json();
+  if(data.error){err.textContent=data.error;err.style.display='block';return;}
+  document.getElementById('blk-name').value='';
+  document.getElementById('blk-start-date').value='';
+  document.getElementById('blk-end-date').value='';
+  showToast('✅ 차단 일정이 추가되었습니다.');
+  await fetchBlocks();
+  renderAdminBlockList();
+  renderBlockBar();
+  renderTable();
+}
+
+async function deleteBlock(id){
+  if(!confirm('이 차단 일정을 삭제하시겠습니까?'))return;
+  const res=await fetch(`/api/lab-blocks/${id}`,{method:'DELETE',credentials:'include'});
+  const data=await res.json();
+  if(data.error){showToast('❌ '+data.error);return;}
+  showToast('🗑️ 차단 일정이 삭제되었습니다.');
+  await fetchBlocks();
+  renderAdminBlockList();
+  renderBlockBar();
+  renderTable();
+}
+
+/* ──────────────────────────────────
    유틸
-────────────────────────────────────── */
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-document.querySelectorAll('.overlay').forEach(o => {
-  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('show'); });
+────────────────────────────────── */
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+document.querySelectorAll('.overlay').forEach(o=>{
+  o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('show');});
 });
-
-function showModalError(prefix, msg) {
-  const el = document.getElementById(`${prefix}-error`);
-  el.textContent = msg; el.style.display = 'block';
-}
-
+function showModalError(prefix,msg){const el=document.getElementById(`${prefix}-error`);el.textContent=msg;el.style.display='block';}
 let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
-}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2800);}
 
-/* ──────────────────────────────────────
+/* ──────────────────────────────────
    기간 네비게이션
-────────────────────────────────────── */
-document.getElementById('btn-prev').onclick = () => { period = prevPeriod(period); load(); };
-document.getElementById('btn-next').onclick = () => { period = nextPeriod(period); load(); };
+────────────────────────────────── */
+document.getElementById('btn-prev').onclick=()=>{period=prevPeriod(period);load();};
+document.getElementById('btn-next').onclick=()=>{period=nextPeriod(period);load();};
 
-/* ──────────────────────────────────────
+/* ──────────────────────────────────
    초기 실행
-────────────────────────────────────── */
+────────────────────────────────── */
+checkAuth();
 load();
 </script>
 </body>

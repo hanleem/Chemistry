@@ -24,6 +24,12 @@ router.post('/', (req, res) => {
   ).get(date, time_slot);
   if (existing) return res.status(409).json({ error: '이미 예약된 시간입니다.' });
 
+  const block = db.prepare(
+    `SELECT class_name FROM lab_blocks
+     WHERE start_date <= ? AND end_date >= ? AND start_time <= ? AND end_time > ?`
+  ).get(date, date, time_slot, time_slot);
+  if (block) return res.status(409).json({ error: `수업(${block.class_name}) 시간으로 예약이 불가합니다.` });
+
   const result = db.prepare(
     'INSERT INTO reservations (date, time_slot, name) VALUES (?, ?, ?)'
   ).run(date, time_slot, name.trim());

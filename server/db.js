@@ -107,6 +107,18 @@ db.exec(`
     created_at  TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
+  CREATE TABLE IF NOT EXISTS lab_blocks (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    class_name TEXT NOT NULL,
+    start_date TEXT NOT NULL,
+    end_date   TEXT NOT NULL,
+    start_time TEXT NOT NULL,
+    end_time   TEXT NOT NULL,
+    created_by INTEGER REFERENCES users(id),
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_lab_blocks_date ON lab_blocks(start_date, end_date);
+
   CREATE TABLE IF NOT EXISTS fair_rnd_programs (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     badge       TEXT NOT NULL DEFAULT '',
