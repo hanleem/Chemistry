@@ -38,6 +38,22 @@ export default function AuthPage() {
     }}>
       {noticeOpen && <NoticeModal onClose={() => setNoticeOpen(false)} />}
 
+      {/* ── 공지사항 버튼 (최상단) ── */}
+      <button
+        onClick={() => setNoticeOpen(true)}
+        style={{
+          width: '100%', padding: '13px 0', marginBottom: 12,
+          borderRadius: 10, border: '2px solid #F59E0B',
+          background: '#FFFBEB', color: '#B45309',
+          fontSize: 14, fontWeight: 800, cursor: 'pointer',
+          letterSpacing: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          boxShadow: '0 2px 8px rgba(245,158,11,0.2)',
+        }}
+      >
+        <span style={{ fontSize: 18 }}>📢</span>
+        !! 공지사항 확인하기 !!
+      </button>
+
       {/* ── 바로가기 버튼 2개 ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
         <button
@@ -114,21 +130,6 @@ export default function AuthPage() {
         </form>
       </div>
 
-      {/* ── 공지사항 버튼 ── */}
-      <button
-        onClick={() => setNoticeOpen(true)}
-        style={{
-          width: '100%', padding: '13px 0', marginTop: 10,
-          borderRadius: 10, border: '2px solid #F59E0B',
-          background: '#FFFBEB', color: '#B45309',
-          fontSize: 14, fontWeight: 800, cursor: 'pointer',
-          letterSpacing: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-          boxShadow: '0 2px 8px rgba(245,158,11,0.2)',
-        }}
-      >
-        <span style={{ fontSize: 18 }}>📢</span>
-        !! 공지사항 확인하기 !!
-      </button>
     </div>
   );
 }
